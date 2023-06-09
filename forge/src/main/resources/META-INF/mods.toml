@@ -1,0 +1,28 @@
+modLoader = "javafml"
+loaderVersion = "*"
+license = "LGPL-3.0"
+
+[[mods]]
+modId = "yaclx"
+version = "1.0"
+displayName = "YetAnotherConfigLibExtensions"
+authors = "Crendgrim"
+description = '''
+Utility Extensions to YetAnotherConfigLib
+'''
+logoFile = "icon.png"
+displayTest = "IGNORE_ALL_VERSION"
+
+[[dependencies.yaclx]]
+modId = "forge"
+mandatory = true
+versionRange = "[46,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.yaclx]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20,)"
+ordering = "NONE"
+side = "BOTH"
