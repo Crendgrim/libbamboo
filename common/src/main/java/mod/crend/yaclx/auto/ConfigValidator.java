@@ -6,15 +6,50 @@ import java.lang.reflect.Field;
 import java.util.Objects;
 
 public class ConfigValidator {
-	@SuppressWarnings("unchecked")
-	private static <T, U extends Comparable<U>> boolean validateRange(T config, Field field, U min, U max) throws IllegalAccessException {
-		U value = (U) field.get(config);
-		if (value.compareTo(min) < 0) {
+	private static <T> boolean validateIntRange(T config, Field field, long min, long max) throws IllegalAccessException {
+		long value = ((Number) field.get(config)).longValue();
+		if (value < min) {
+			field.set(config, (int) min);
+			return false;
+		}
+		else if (value > max) {
+			field.set(config, (int) max);
+			return false;
+		}
+		return true;
+	}
+	private static <T> boolean validateLongRange(T config, Field field, long min, long max) throws IllegalAccessException {
+		long value = ((Number) field.get(config)).longValue();
+		if (value < min) {
 			field.set(config, min);
 			return false;
 		}
-		else if (value.compareTo(max) > 0) {
+		else if (value > max) {
 			field.set(config, max);
+			return false;
+		}
+		return true;
+	}
+	private static <T> boolean validateDoubleRange(T config, Field field, double min, double max) throws IllegalAccessException {
+		double value = ((Number) field.get(config)).doubleValue();
+		if (value < min) {
+			field.set(config, min);
+			return false;
+		}
+		else if (value > max) {
+			field.set(config, max);
+			return false;
+		}
+		return true;
+	}
+	private static <T> boolean validateFloatRange(T config, Field field, double min, double max) throws IllegalAccessException {
+		double value = ((Number) field.get(config)).doubleValue();
+		if (value < min) {
+			field.set(config, (float) min);
+			return false;
+		}
+		else if (value > max) {
+			field.set(config, (float) max);
 			return false;
 		}
 		return true;
@@ -57,11 +92,17 @@ public class ConfigValidator {
 		if (!Objects.equals(field.get(config), field.get(defaults))) {
 			NumericRange numericRange = field.getAnnotation(NumericRange.class);
 			if (numericRange != null) {
-				return validateRange(config, field, numericRange.min(), numericRange.max());
+				if (field.getType() == Integer.TYPE)
+					return validateIntRange(config, field, numericRange.min(), numericRange.max());
+				else
+					return validateLongRange(config, field, numericRange.min(), numericRange.max());
 			}
 			FloatingPointRange floatingPointRange = field.getAnnotation(FloatingPointRange.class);
 			if (floatingPointRange != null) {
-				return validateRange(config, field, floatingPointRange.min(), floatingPointRange.max());
+				if (field.getType() == Float.TYPE)
+					return validateFloatRange(config, field, floatingPointRange.min(), floatingPointRange.max());
+				else
+					return validateDoubleRange(config, field, floatingPointRange.min(), floatingPointRange.max());
 			}
 			StringOptions stringOptions = field.getAnnotation(StringOptions.class);
 			if (stringOptions != null) {

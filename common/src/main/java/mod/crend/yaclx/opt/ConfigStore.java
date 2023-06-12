@@ -113,7 +113,6 @@ public class ConfigStore<T> {
 	private void createNewConfig(Class<T> configClass) {
 		try {
 			configInstance = configClass.getDeclaredConstructor().newInstance();
-			save();
 		} catch (ReflectiveOperationException f) {
 			throw new RuntimeException(f);
 		}
@@ -123,20 +122,26 @@ public class ConfigStore<T> {
 		this.configClass = configClass;
 		this.modId = modId;
 		this.path = path;
-		if (updater != null) {
-			try {
-				JsonObject json = JsonParser.parseString(Files.readString(path)).getAsJsonObject();
-				if (updater.updateConfigFile(json)) {
-					StringWriter stringWriter = new StringWriter();
-					JsonWriter jsonWriter = new JsonWriter(stringWriter);
-					jsonWriter.setIndent("  ");
-					jsonWriter.setLenient(true);
-					Streams.write(json, jsonWriter);
-					Files.writeString(path, stringWriter.toString());
-				}
-			} catch (IOException e) {
-				createNewConfig(configClass);
+		ConfigJsonValidator<T> jsonValidator = new ConfigJsonValidator<>(configClass);
+		boolean doSave = false;
+		try {
+			JsonObject json = JsonParser.parseString(Files.readString(path)).getAsJsonObject();
+			boolean update = jsonValidator.validate(json);
+			if (updater != null) {
+				update |= updater.updateConfigFile(json);
 			}
+			if (update) {
+				StringWriter stringWriter = new StringWriter();
+				JsonWriter jsonWriter = new JsonWriter(stringWriter);
+				jsonWriter.setIndent("  ");
+				jsonWriter.setLenient(true);
+				Streams.write(json, jsonWriter);
+				Files.writeString(path, stringWriter.toString());
+				doSave = true;
+			}
+		} catch (IOException e) {
+			createNewConfig(configClass);
+			doSave = true;
 		}
 		if (YaclX.HAS_YACL) {
 			yaclWrapper = new WithYacl<>(configClass, path);
@@ -145,7 +150,11 @@ public class ConfigStore<T> {
 				configInstance = getGsonBuilder().create().fromJson(Files.readString(path), configClass);
 			} catch (IOException e) {
 				createNewConfig(configClass);
+				doSave = true;
 			}
+		}
+		if (doSave) {
+			save();
 		}
 	}
 
