@@ -17,6 +17,12 @@ public @interface EnableIf {
 			return value == Boolean.TRUE;
 		}
 	}
+	class NegativeBooleanPredicate implements Predicate {
+		@Override
+		public boolean test(Object value) {
+			return value == Boolean.FALSE;
+		}
+	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
