@@ -1,6 +1,6 @@
 package mod.crend.yaclx.render;
 
-import dev.isxander.yacl3.gui.ImageRenderer;
+import dev.isxander.yacl3.gui.image.ImageRenderer;
 import mod.crend.yaclx.type.ItemOrTag;
 import mod.crend.yaclx.auto.annotation.DescriptionImage;
 import net.minecraft.client.gui.DrawContext;
@@ -23,7 +23,7 @@ public class ItemOrTagRenderer implements ImageRenderer {
 	}
 
 	@Override
-	public int render(DrawContext graphics, int x, int y, int renderWidth) {
+	public int render(DrawContext graphics, int x, int y, int renderWidth, float tickDelta) {
 		int dx = 0, dy = 0;
 		for (Item entry : list) {
 			if (entry == Items.AIR) continue;

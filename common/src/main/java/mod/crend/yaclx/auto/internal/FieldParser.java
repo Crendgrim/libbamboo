@@ -1,7 +1,7 @@
 package mod.crend.yaclx.auto.internal;
 
 import dev.isxander.yacl3.api.*;
-import dev.isxander.yacl3.gui.ImageRenderer;
+import dev.isxander.yacl3.gui.image.ImageRenderer;
 import mod.crend.yaclx.auto.annotation.*;
 import mod.crend.yaclx.render.ListImageRenderer;
 import net.minecraft.client.resource.language.I18n;

@@ -1,6 +1,6 @@
 package mod.crend.yaclx.render;
 
-import dev.isxander.yacl3.gui.ImageRenderer;
+import dev.isxander.yacl3.gui.image.ImageRenderer;
 
 import java.util.List;
 

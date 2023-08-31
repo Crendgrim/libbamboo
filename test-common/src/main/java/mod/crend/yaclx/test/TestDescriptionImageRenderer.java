@@ -1,6 +1,6 @@
 package mod.crend.yaclx.test;
 
-import dev.isxander.yacl3.gui.ImageRenderer;
+import dev.isxander.yacl3.gui.image.ImageRenderer;
 import mod.crend.yaclx.auto.annotation.DescriptionImage;
 import mod.crend.yaclx.auto.annotation.Listener;
 import net.minecraft.client.MinecraftClient;
@@ -16,7 +16,7 @@ public class TestDescriptionImageRenderer implements ImageRenderer {
 	}
 
 	@Override
-	public int render(DrawContext graphics, int x, int y, int renderWidth) {
+	public int render(DrawContext graphics, int x, int y, int renderWidth, float tickDelta) {
 		graphics.drawText(MinecraftClient.getInstance().textRenderer, Text.literal(value.toString()).formatted(formatting), x, y, 0x000000FF, true);
 		return 16;
 	}
