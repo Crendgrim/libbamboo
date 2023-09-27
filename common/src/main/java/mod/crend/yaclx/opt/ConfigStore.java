@@ -19,6 +19,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.Item;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -66,7 +67,7 @@ public class ConfigStore<T> {
 	/**
 	 * Sets up the config parsing, and takes the filename from the @AutoYaclConfig annotation on the specified config
 	 * class.
-	 * @param configClass the class referring to T, with fields marked as @ConfigEntry.
+	 * @param configClass the class referring to T, with fields marked as @SerialEntry.
 	 */
 	public ConfigStore(Class<T> configClass) {
 		this(configClass, null);
@@ -74,7 +75,7 @@ public class ConfigStore<T> {
 	/**
 	 * Sets up the config parsing, and takes the filename from the @AutoYaclConfig annotation on the specified config
 	 * class.
-	 * @param configClass the class referring to T, with fields marked as @ConfigEntry.
+	 * @param configClass the class referring to T, with fields marked as @SerialEntry.
 	 * @param updater a class specifying a config updater to prepare outdated configs before parsing.
 	 */
 	public ConfigStore(Class<T> configClass, ConfigUpdater updater) {
@@ -91,7 +92,7 @@ public class ConfigStore<T> {
 
 	/**
 	 * Sets up the config parsing, and takes the filename from the given argument.
-	 * @param configClass the class referring to T, with fields marked as @ConfigEntry.
+	 * @param configClass the class referring to T, with fields marked as @SerialEntry.
 	 * @param modId the mod ID used to generate translation entries.
 	 * @param path the path to the config file.
 	 */
@@ -101,7 +102,7 @@ public class ConfigStore<T> {
 
 	/**
 	 * Sets up the config parsing, and takes the filename from the given argument.
-	 * @param configClass the class referring to T, with fields marked as @ConfigEntry.
+	 * @param configClass the class referring to T, with fields marked as @SerialEntry.
 	 * @param modId the mod ID used to generate translation entries.
 	 * @param path the path to the config file.
 	 * @param updater a class specifying a config updater to prepare outdated configs before parsing.
@@ -144,7 +145,7 @@ public class ConfigStore<T> {
 			doSave = true;
 		}
 		if (YaclX.HAS_YACL) {
-			yaclWrapper = new WithYacl<>(configClass, path);
+			yaclWrapper = new WithYacl<>(configClass, new Identifier(modId, configClass.getSimpleName().toLowerCase()), path);
 		} else {
 			try {
 				configInstance = getGsonBuilder().create().fromJson(Files.readString(path), configClass);

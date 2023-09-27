@@ -3,6 +3,7 @@ package mod.crend.yaclx.controller;
 import dev.isxander.yacl3.api.Controller;
 import dev.isxander.yacl3.api.Option;
 import dev.isxander.yacl3.api.controller.EnumControllerBuilder;
+import dev.isxander.yacl3.api.controller.ValueFormatter;
 import dev.isxander.yacl3.api.utils.Dimension;
 import dev.isxander.yacl3.gui.AbstractWidget;
 import dev.isxander.yacl3.gui.YACLScreen;
@@ -12,13 +13,14 @@ import dev.isxander.yacl3.impl.controller.AbstractControllerBuilderImpl;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 public class DecoratedEnumController <T extends Enum<T>> extends EnumController<T> {
 	protected final Decorator<T> renderer;
 
-	public DecoratedEnumController(Option<T> option, Function<T, Text> valueFormatter, T[] availableValues, Decorator<T> renderer) {
-		super(option, valueFormatter, availableValues);
+	public DecoratedEnumController(Option<T> option, ValueFormatter<T> valueFormatter, T[] availableValues, Decorator<T> renderer) {
+		super(option, valueFormatter::format, availableValues);
 		this.renderer = renderer;
 	}
 
@@ -34,7 +36,6 @@ public class DecoratedEnumController <T extends Enum<T>> extends EnumController<
 	public interface DecoratedEnumControllerBuilder<T extends Enum<T>> extends EnumControllerBuilder<T> {
 		DecoratedEnumControllerBuilder<T> decorator(Decorator<T> renderer);
 		DecoratedEnumControllerBuilder<T> enumClass(Class<T> enumClass);
-		DecoratedEnumControllerBuilder<T> valueFormatter(Function<T, Text> formatter);
 
 		static <T extends Enum<T>> DecoratedEnumControllerBuilder<T> create(Option<T> option) {
 			return new DecoratedEnumControllerBuilderImpl<>(option);
@@ -48,7 +49,7 @@ public class DecoratedEnumController <T extends Enum<T>> extends EnumController<
 
 	public static class DecoratedEnumControllerBuilderImpl<T extends Enum<T>> extends AbstractControllerBuilderImpl<T> implements DecoratedEnumControllerBuilder<T> {
 		private Class<T> enumClass;
-		private Function<T, Text> formatter = EnumController.getDefaultFormatter();
+		private ValueFormatter<T> formatter = null;
 		private Decorator<T> renderer = (value, context, x, y) -> {};
 
 		public DecoratedEnumControllerBuilderImpl(Option<T> option) {
@@ -62,8 +63,8 @@ public class DecoratedEnumController <T extends Enum<T>> extends EnumController<
 		}
 
 		@Override
-		public DecoratedEnumControllerBuilder<T> valueFormatter(Function<T, Text> formatter) {
-			this.formatter = formatter;
+		public DecoratedEnumControllerBuilder<T> formatValue(ValueFormatter<T> valueFormatter) {
+			this.formatter = valueFormatter;
 			return this;
 		}
 
@@ -75,6 +76,13 @@ public class DecoratedEnumController <T extends Enum<T>> extends EnumController<
 
 		@Override
 		public Controller<T> build() {
+			ValueFormatter<T> formatter = this.formatter;
+			if (formatter == null) {
+				Function<T, Text> formatFunction = EnumController.getDefaultFormatter();
+				Objects.requireNonNull(formatFunction);
+				formatter = formatFunction::apply;
+			}
+
 			return new DecoratedEnumController<>(option, formatter, enumClass.getEnumConstants(), renderer);
 		}
 	}

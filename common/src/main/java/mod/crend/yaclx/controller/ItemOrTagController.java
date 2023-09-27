@@ -6,6 +6,8 @@ import dev.isxander.yacl3.api.controller.ControllerBuilder;
 import dev.isxander.yacl3.api.utils.Dimension;
 import dev.isxander.yacl3.gui.AbstractWidget;
 import dev.isxander.yacl3.gui.YACLScreen;
+import dev.isxander.yacl3.gui.controllers.dropdown.AbstractDropdownController;
+import dev.isxander.yacl3.gui.controllers.dropdown.AbstractDropdownControllerElement;
 import dev.isxander.yacl3.impl.controller.AbstractControllerBuilderImpl;
 import mod.crend.yaclx.type.ItemOrTag;
 import mod.crend.yaclx.ItemRegistryHelper;
@@ -98,7 +100,7 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 	}
 
 	@Override
-	String getValidValue(String value, int offset) {
+	protected String getValidValue(String value, int offset) {
 		if (value.startsWith("#")) {
 			return value;
 		} else {
@@ -135,7 +137,7 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 		}
 	}
 
-	public static class ItemOrTagControllerElement extends DropdownControllerElement<ItemOrTag, Identifier> {
+	public static class ItemOrTagControllerElement extends AbstractDropdownControllerElement<ItemOrTag, Identifier> {
 		private final ItemOrTagController itemOrTagController;
 
 		public ItemOrTagControllerElement(ItemOrTagController control, YACLScreen screen, Dimension<Integer> dim) {
@@ -145,10 +147,10 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 
 		@Override
 		public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-			if (inputFieldFocused && opened && keyCode == InputUtil.GLFW_KEY_ENTER) {
+			if (inputFieldFocused && dropdownVisible && keyCode == InputUtil.GLFW_KEY_ENTER) {
 				if (inputField.startsWith("#") && getDropdownLength() > 0) {
 					inputField = getMatchingItemTagIdentifiers(inputField.substring(1))
-							.skip(selected)
+							.skip(selectedIndex)
 							.findFirst()
 							.map(id -> "#" + id)
 							.orElseGet(itemOrTagController::getString);
@@ -183,7 +185,7 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 		}
 
 		@Override
-		public List<Identifier> getMatchingValues() {
+		public List<Identifier> computeMatchingValues() {
 			if (inputField.startsWith("#")) {
 				return getMatchingItemTagIdentifiers(inputField.substring(1)).toList();
 			} else {
@@ -205,8 +207,8 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 		}
 
 		@Override
-		protected void renderOption(DrawContext graphics, Identifier identifier, int n) {
-			super.renderOption(graphics, identifier, n);
+		protected void renderDropdownEntry(DrawContext graphics, Identifier identifier, int n) {
+			super.renderDropdownEntry(graphics, identifier, n);
 			Item item;
 			if (inputField.startsWith("#")) {
 				TagKey<Item> tagKey = TagKey.of(RegistryKeys.ITEM, identifier);

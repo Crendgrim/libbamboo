@@ -1,6 +1,6 @@
 package mod.crend.yaclx.test;
 
-import dev.isxander.yacl3.config.ConfigEntry;
+import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import mod.crend.yaclx.type.ItemOrTag;
 import mod.crend.yaclx.render.ItemOrTagRenderer;
 import mod.crend.yaclx.auto.annotation.*;
@@ -18,101 +18,101 @@ import java.util.List;
 public class Config {
 	public static final ConfigStore<Config> CONFIG_STORE = new ConfigStore<>(Config.class);
 
-	@ConfigEntry
+	@SerialEntry
 	@OnSave(assetReload = true)
 	@Label(key = "yaclxtest.label")
 	public boolean trivialOptions = true;
 
-	@ConfigEntry
+	@SerialEntry
 	public boolean numericalRanges = true;
 
-	@ConfigEntry
+	@SerialEntry
 	@TransitiveObject
 	public Ranges ranges = new Ranges();
 
-	@ConfigEntry
+	@SerialEntry
 	public int intValue = 17;
 
 	@Order(value = {"doubleRange", "floatRange"})
 	public static class Ranges {
-		@ConfigEntry
+		@SerialEntry
 		@NumericRange(min = 0, max = 20, interval = 2)
 		@EnableIf(field = "trivialOptions", value = EnableIf.BooleanPredicate.class)
 		@EnableIf(field = "numericalRanges", value = EnableIf.BooleanPredicate.class)
 		@Translation(key = "yaclxtest.range")
 		public int intRange = 10;
 
-		@ConfigEntry
+		@SerialEntry
 		@NumericRange(min = 100, max = 1000, interval = 100)
 		@EnableIf(field = "trivialOptions", value = EnableIf.BooleanPredicate.class)
 		@EnableIf(field = "numericalRanges", value = EnableIf.BooleanPredicate.class)
 		public long longRange = 0;
 
-		@ConfigEntry
+		@SerialEntry
 		@FloatingPointRange(min = 2.0, max = 4.0, interval = 0.2)
 		@EnableIf(field = "trivialOptions", value = EnableIf.BooleanPredicate.class)
 		@EnableIf(field = "numericalRanges", value = EnableIf.BooleanPredicate.class)
 		public double doubleRange = 5.4;
 
-		@ConfigEntry
+		@SerialEntry
 		@FloatingPointRange(min = 0.4, max = 1.0, interval = 0.1)
 		@EnableIf(field = "trivialOptions", value = EnableIf.BooleanPredicate.class)
 		@EnableIf(field = "numericalRanges", value = EnableIf.BooleanPredicate.class)
 		public float floatRange = 0.7f;
 	}
 
-	@ConfigEntry
+	@SerialEntry
 	public String string = "foo";
 
-	@ConfigEntry
+	@SerialEntry
 	@StringOptions(options = {"Apple", "Banana", "Cherry", "Date"}, allowEmpty = true)
 	@EnableIf(field = "trivialOptions", value = EnableIf.BooleanPredicate.class)
 	public String stringOptions = "";
 
-	@ConfigEntry
+	@SerialEntry
 	public Color color = new Color(0xFF0000);
-	@ConfigEntry
+	@SerialEntry
 	public Color colorWithAlpha = new Color(0x00FF0080, true);
 
-	@ConfigEntry
+	@SerialEntry
 	@Category(name = "general", group = "enums")
 	@Listener(value = TestDescriptionImageRenderer.Callback.class)
 	@DescriptionImage(value = TestDescriptionImageRenderer.Factory.class)
 	public TestEnum testEnum = TestEnum.DEFAULT;
 
-	@ConfigEntry
+	@SerialEntry
 	@Category(name = "general", group = "enums")
 	@Decorate(decorator = TestEnumDecorator.class)
 	public TestEnum decoratedEnum = TestEnum.MAGIC;
 
-	@ConfigEntry
+	@SerialEntry
 	@Category(name = "item")
 	@DescriptionImage(ItemOrTagRenderer.OfItem.class)
 	public Item item = Items.BONE;
 
-	@ConfigEntry
+	@SerialEntry
 	@Category(name = "item")
 	@DescriptionImage(ItemOrTagRenderer.OfItemOrTag.class)
 	public ItemOrTag itemOrTag = new ItemOrTag(Items.ARROW);
 
-	@ConfigEntry
+	@SerialEntry
 	@Category(name = "lists")
 	@DescriptionImage(ItemOrTagRenderer.OfItem.class)
 	public List<Item> itemList = List.of(Items.APPLE, Items.PUMPKIN_PIE, Items.CAKE, Items.COOKIE);
 
-	@ConfigEntry
+	@SerialEntry
 	@Reverse
 	@Category(name = "lists")
 	@DescriptionImage(ItemOrTagRenderer.OfItem.class)
 	public List<Item> reversedList = List.of(Items.APPLE, Items.PUMPKIN_PIE, Items.CAKE, Items.COOKIE);
 
-	@ConfigEntry
+	@SerialEntry
 	@Category(name = "lists")
 	@EnableIf(field = "trivialOptions", value = EnableIf.BooleanPredicate.class)
 	@DescriptionImage(ItemOrTagRenderer.OfItemOrTag.class)
 	public List<ItemOrTag> itemOrTagList = List.of(new ItemOrTag(Items.MINECART), new ItemOrTag(ItemTags.BOATS));
 
-	@ConfigEntry
+	@SerialEntry
 	@Category(name = "lists")
 	public List<Color> colorList = List.of(new Color(Colors.RED), new Color(Colors.BLACK));
 }

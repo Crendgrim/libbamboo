@@ -7,8 +7,6 @@ import mod.crend.yaclx.type.EnumFormatter;
 import mod.crend.yaclx.type.ItemOrTag;
 import mod.crend.yaclx.auto.annotation.*;
 import mod.crend.yaclx.controller.DecoratedEnumController;
-import mod.crend.yaclx.controller.DropdownStringController;
-import mod.crend.yaclx.controller.ItemController;
 import mod.crend.yaclx.controller.ItemOrTagController;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -79,8 +77,8 @@ class TypedController {
 				allowedValues.add("");
 			}
 			return (opt ->
-					DropdownStringController.DropdownControllerBuilder.create(opt)
-							.allowedValues(allowedValues)
+					DropdownStringControllerBuilder.create(opt)
+							.values(allowedValues)
 			);
 		}
 
@@ -98,7 +96,6 @@ class TypedController {
 				DecoratedEnumController.Decorator<T> decorator = (DecoratedEnumController.Decorator<T>) decorate.decorator().getConstructor().newInstance();
 				return (opt -> DecoratedEnumController.DecoratedEnumControllerBuilder.create(opt)
 						.enumClass((Class<T>) clazz)
-						.valueFormatter(EnumFormatter.getEnumFormatter())
 						.decorator(decorator)
 				);
 			} catch (ReflectiveOperationException e) {
@@ -107,7 +104,6 @@ class TypedController {
 		} else {
 			return (opt -> EnumControllerBuilder.create(opt)
 					.enumClass((Class<T>) clazz)
-					.valueFormatter(EnumFormatter.getEnumFormatter())
 			);
 		}
 	}
@@ -119,7 +115,7 @@ class TypedController {
 	}
 
 	private static Function<Option<Item>, ControllerBuilder<Item>> getItemController(Field field) {
-		return ItemController.ItemControllerBuilder::create;
+		return ItemControllerBuilder::create;
 	}
 
 	private static Function<Option<ItemOrTag>, ControllerBuilder<ItemOrTag>> getItemOrTagController(Field field) {

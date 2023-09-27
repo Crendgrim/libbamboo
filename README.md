@@ -59,7 +59,7 @@ changed between mod versions.
 AutoYACL is to YACL what AutoConfig is to ClothConfig. It allows for annotation-based GUI building.
 
 Instead of specifying the binding, controller, description, etc. for every option, it simply parses the
-annotations present on any `@ConfigEntry` annotated field of the config.
+annotations present on any `@SerialEntry` annotated field of the config.
 
 Any field that is recognized as a supported data type gets an option controller. Other types will be
 interpreted as organization classes containing further config entries, and parsed recursively. The option

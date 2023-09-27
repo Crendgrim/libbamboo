@@ -1,7 +1,7 @@
 package mod.crend.yaclx.auto;
 
 import dev.isxander.yacl3.api.*;
-import dev.isxander.yacl3.config.ConfigEntry;
+import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import mod.crend.yaclx.auto.annotation.*;
 import mod.crend.yaclx.auto.internal.FieldParser;
 import net.minecraft.text.Text;
@@ -447,7 +447,7 @@ public class AutoYacl <T> {
 		categories.put("general", categoryMain);
 
 		for (Field field : configClass.getFields()) {
-			if (field.isAnnotationPresent(ConfigEntry.class)) {
+			if (field.isAnnotationPresent(SerialEntry.class)) {
 				Category category = field.getAnnotation(Category.class);
 				if (category == null) {
 					categoryMain.register(field.getName(), field);
