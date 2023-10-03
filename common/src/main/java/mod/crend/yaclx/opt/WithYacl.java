@@ -42,7 +42,7 @@ public class WithYacl<T> {
 						.build())
 				.build();
 
-		instance.serializer().load();
+		instance.load();
 
 		autoYacl = new AutoYacl<>(configClass, instance.defaults(), instance.instance());
 	}
@@ -52,7 +52,7 @@ public class WithYacl<T> {
 	}
 
 	public void save() {
-		instance.serializer().save();
+		instance.save();
 	}
 
 	public void registerDummyConfig(T dummyConfig) {
@@ -65,7 +65,7 @@ public class WithYacl<T> {
 				(defaults, config, builder) -> autoYacl
 						.parse(builder)
 						.save(() -> {
-							instance.serializer().save();
+							instance.save();
 							configChangeListener.onConfigChange();
 						})
 		);
