@@ -1,10 +1,13 @@
 package mod.crend.yaclx.test;
 
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
+import mod.crend.yaclx.type.BlockOrTag;
 import mod.crend.yaclx.type.ItemOrTag;
 import mod.crend.yaclx.render.ItemOrTagRenderer;
 import mod.crend.yaclx.auto.annotation.*;
 import mod.crend.yaclx.opt.ConfigStore;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.tag.ItemTags;
@@ -94,6 +97,16 @@ public class Config {
 	@Category(name = "item")
 	@DescriptionImage(ItemOrTagRenderer.OfItemOrTag.class)
 	public ItemOrTag itemOrTag = new ItemOrTag(Items.ARROW);
+
+	@SerialEntry
+	@Category(name = "item")
+	@DescriptionImage(ItemOrTagRenderer.OfBlock.class)
+	public Block block = Blocks.OAK_LOG;
+
+	@SerialEntry
+	@Category(name = "item")
+	@DescriptionImage(ItemOrTagRenderer.OfBlockOrTag.class)
+	public BlockOrTag blockOrTag = new BlockOrTag(Blocks.STRIPPED_BAMBOO_BLOCK);
 
 	@SerialEntry
 	@Category(name = "lists")

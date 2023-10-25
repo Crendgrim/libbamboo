@@ -1,7 +1,7 @@
 package mod.crend.yaclx.type;
 
 import com.google.gson.*;
-import mod.crend.yaclx.ItemRegistryHelper;
+import dev.isxander.yacl3.gui.utils.ItemRegistryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 

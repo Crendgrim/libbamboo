@@ -3,11 +3,15 @@ package mod.crend.yaclx.auto.internal;
 import dev.isxander.yacl3.api.ListOption;
 import dev.isxander.yacl3.api.Option;
 import dev.isxander.yacl3.api.controller.*;
-import mod.crend.yaclx.type.EnumFormatter;
+import mod.crend.yaclx.controller.BlockController;
+import mod.crend.yaclx.controller.BlockOrTagController;
+import mod.crend.yaclx.type.BlockOrTag;
 import mod.crend.yaclx.type.ItemOrTag;
 import mod.crend.yaclx.auto.annotation.*;
 import mod.crend.yaclx.controller.DecoratedEnumController;
 import mod.crend.yaclx.controller.ItemOrTagController;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 
@@ -122,6 +126,14 @@ class TypedController {
 		return ItemOrTagController.ItemOrTagControllerBuilder::create;
 	}
 
+	private static Function<Option<Block>, ControllerBuilder<Block>> getBlockController(Field field) {
+		return BlockController.BlockControllerBuilder::create;
+	}
+
+	private static Function<Option<BlockOrTag>, ControllerBuilder<BlockOrTag>> getBlockOrTagController(Field field) {
+		return BlockOrTagController.BlockOrTagControllerBuilder::create;
+	}
+
 	private static <T> Option.Builder<T> makeBuilder(FieldParser<?> fieldParser) {
 		@SuppressWarnings("unchecked")
 		FieldParser<T> parser = (FieldParser<T>) fieldParser;
@@ -206,6 +218,16 @@ class TypedController {
 			return TypedController.<ItemOrTag>makeBuilder(fieldParser)
 					.controller(getItemOrTagController(field));
 
+		} else if (type.equals(Block.class)) {
+
+			return TypedController.<Block>makeBuilder(fieldParser)
+					.controller(getBlockController(field));
+
+		} else if (type.equals(BlockOrTag.class)) {
+
+			return TypedController.<BlockOrTag>makeBuilder(fieldParser)
+					.controller(getBlockOrTagController(field));
+
 		}
 		return null;
 	}
@@ -272,6 +294,19 @@ class TypedController {
 			return TypedController.<ItemOrTag>makeListBuilder(fieldParser, reverse)
 					.initial(new ItemOrTag(Items.AIR))
 					.controller(getItemOrTagController(field));
+
+		} else if (type.equals(Block.class)) {
+
+			return TypedController.<Block>makeListBuilder(fieldParser, reverse)
+					.initial(Blocks.AIR)
+					.controller(getBlockController(field));
+
+		} else if (type.equals(BlockOrTag.class)) {
+
+			return TypedController.<BlockOrTag>makeListBuilder(fieldParser, reverse)
+					.initial(new BlockOrTag(Blocks.AIR))
+					.controller(getBlockOrTagController(field));
+
 		}
 
 		return null;

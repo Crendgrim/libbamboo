@@ -9,10 +9,8 @@ import com.google.gson.stream.JsonWriter;
 import mod.crend.yaclx.*;
 import mod.crend.yaclx.auto.ConfigValidator;
 import mod.crend.yaclx.auto.annotation.AutoYaclConfig;
-import mod.crend.yaclx.type.ColorTypeAdapter;
-import mod.crend.yaclx.type.ItemOrTag;
-import mod.crend.yaclx.type.ItemOrTagTypeAdapter;
-import mod.crend.yaclx.type.ItemTypeAdapter;
+import mod.crend.yaclx.type.*;
+import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.NoticeScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -48,11 +46,11 @@ public class ConfigStore<T> {
 		return new GsonBuilder()
 				.setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
 				.setPrettyPrinting()
-				.registerTypeHierarchyAdapter(Text.class, new Text.Serializer())
-				.registerTypeHierarchyAdapter(Style.class, new Style.Serializer())
 				.registerTypeHierarchyAdapter(Color.class, new ColorTypeAdapter())
 				.registerTypeHierarchyAdapter(Item.class, new ItemTypeAdapter())
 				.registerTypeHierarchyAdapter(ItemOrTag.class, new ItemOrTagTypeAdapter())
+				.registerTypeHierarchyAdapter(Block.class, new BlockTypeAdapter())
+				.registerTypeHierarchyAdapter(BlockOrTag.class, new BlockOrTagTypeAdapter())
 				.serializeNulls();
 	}
 

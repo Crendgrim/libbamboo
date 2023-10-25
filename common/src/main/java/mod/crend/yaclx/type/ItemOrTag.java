@@ -1,6 +1,6 @@
 package mod.crend.yaclx.type;
 
-import mod.crend.yaclx.ItemRegistryHelper;
+import dev.isxander.yacl3.gui.utils.ItemRegistryHelper;
 import mod.crend.yaclx.PlatformUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;

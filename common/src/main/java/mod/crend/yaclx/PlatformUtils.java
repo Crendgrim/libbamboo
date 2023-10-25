@@ -1,6 +1,7 @@
 package mod.crend.yaclx;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -27,6 +28,16 @@ public class PlatformUtils {
 
 	@ExpectPlatform
 	public static Set<Identifier> getItemsFromTag(TagKey<Item> itemTagKey) {
+		throw new AssertionError();
+	}
+
+	@ExpectPlatform
+	public static Class<?> getModdedBlockTagsClass() {
+		throw new AssertionError();
+	}
+
+	@ExpectPlatform
+	public static Set<Identifier> getBlocksFromTag(TagKey<Block> blockTagKey) {
 		throw new AssertionError();
 	}
 }

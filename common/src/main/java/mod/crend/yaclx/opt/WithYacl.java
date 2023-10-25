@@ -1,22 +1,15 @@
 package mod.crend.yaclx.opt;
 
 import com.google.gson.FieldNamingPolicy;
-import com.google.gson.GsonBuilder;
 import dev.isxander.yacl3.api.YetAnotherConfigLib;
-import dev.isxander.yacl3.config.GsonConfigInstance;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
-import mod.crend.yaclx.type.ItemOrTag;
-import mod.crend.yaclx.type.ItemOrTagTypeAdapter;
-import mod.crend.yaclx.type.ItemTypeAdapter;
+import mod.crend.yaclx.type.*;
 import mod.crend.yaclx.auto.AutoYacl;
+import net.minecraft.block.Block;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.item.Item;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import java.awt.Color;
 import java.nio.file.Path;
 
 /**
@@ -38,6 +31,8 @@ public class WithYacl<T> {
 						.appendGsonBuilder(builder -> builder
 									.setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
 									.registerTypeHierarchyAdapter(ItemOrTag.class, new ItemOrTagTypeAdapter())
+									.registerTypeHierarchyAdapter(Block.class, new BlockTypeAdapter())
+									.registerTypeHierarchyAdapter(BlockOrTag.class, new BlockOrTagTypeAdapter())
 						)
 						.build())
 				.build();

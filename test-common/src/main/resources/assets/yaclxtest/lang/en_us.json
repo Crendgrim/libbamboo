@@ -29,6 +29,8 @@
 
   "yaclxtest.option.item": "Item",
   "yaclxtest.option.itemOrTag": "Item Or Tag",
+  "yaclxtest.option.block": "Block",
+  "yaclxtest.option.blockOrTag": "Block Or Tag",
   "yaclxtest.option.itemList": "Item List",
   "yaclxtest.option.reversedList": "Reversed item List",
   "yaclxtest.option.itemOrTagList": "Item or Tag List",

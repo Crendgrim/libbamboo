@@ -1,6 +1,8 @@
 package mod.crend.yaclx.forge;
 
 import mod.crend.yaclx.YaclX;
+import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -26,6 +28,20 @@ public class PlatformUtilsImpl {
 	}
 
 	public static Set<Identifier> getItemsFromTag(TagKey<Item> itemTagKey) {
+		if (ModList.get().isLoaded("fabric_api")) {
+			return ClientTags.getOrCreateLocalTag(itemTagKey);
+		}
+		return Set.of();
+	}
+
+	public static Class<?> getModdedBlockTagsClass() {
+		return Tags.Blocks.class;
+	}
+
+	public static Set<Identifier> getBlocksFromTag(TagKey<Block> blockTagKey) {
+		if (ModList.get().isLoaded("fabric_api")) {
+			return ClientTags.getOrCreateLocalTag(blockTagKey);
+		}
 		return Set.of();
 	}
 }

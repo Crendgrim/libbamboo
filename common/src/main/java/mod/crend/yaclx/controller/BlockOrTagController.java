@@ -8,12 +8,13 @@ import dev.isxander.yacl3.gui.AbstractWidget;
 import dev.isxander.yacl3.gui.YACLScreen;
 import dev.isxander.yacl3.gui.controllers.dropdown.AbstractDropdownController;
 import dev.isxander.yacl3.gui.controllers.dropdown.AbstractDropdownControllerElement;
-import dev.isxander.yacl3.gui.utils.ItemRegistryHelper;
 import dev.isxander.yacl3.impl.controller.AbstractControllerBuilderImpl;
-import mod.crend.yaclx.type.ItemOrTag;
+import mod.crend.yaclx.BlockRegistryHelper;
+import mod.crend.yaclx.type.BlockOrTag;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.item.Item;
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
@@ -29,20 +30,20 @@ import java.util.stream.Stream;
  * Simple controller that simply runs the button action on press
  * and renders a {@link} Text on the right.
  */
-public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
+public class BlockOrTagController extends AbstractDropdownController<BlockOrTag> {
 
 	/**
-	 * Constructs an item controller
+	 * Constructs a block controller
 	 *
 	 * @param option bound option
 	 */
-	public ItemOrTagController(Option<ItemOrTag> option) {
+	public BlockOrTagController(Option<BlockOrTag> option) {
 		super(option);
 	}
 
-	static Stream<Identifier> getMatchingItemTagIdentifiers(String value) {
+	static Stream<Identifier> getMatchingBlockTagIdentifiers(String value) {
 		int sep = value.indexOf(Identifier.NAMESPACE_SEPARATOR);
-		Predicate<TagKey<Item>> filterPredicate;
+		Predicate<TagKey<Block>> filterPredicate;
 		if (sep == -1) {
 			filterPredicate = tagKey ->
 					tagKey.id().getPath().contains(value)
@@ -52,7 +53,7 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 			String path = value.substring(sep + 1);
 			filterPredicate = tagKey -> tagKey.id().getNamespace().equals(namespace) && tagKey.id().getPath().startsWith(path);
 		}
-		return ItemOrTag.getItemTags().stream()
+		return BlockOrTag.getBlockTags().stream()
 				.filter(filterPredicate)
 				.sorted((t1, t2) -> {
 					String path = (sep == -1 ? value : value.substring(sep + 1));
@@ -79,7 +80,7 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 
 	@Override
 	public void setFromString(String value) {
-		ItemOrTag.fromString(value, false).ifPresent(option::requestSet);
+		BlockOrTag.fromString(value, false).ifPresent(option::requestSet);
 	}
 
 	/**
@@ -93,9 +94,9 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 	@Override
 	public boolean isValueValid(String value) {
 		if (value.startsWith("#")) {
-			return ItemOrTag.isItemTag(value.substring(1));
+			return BlockOrTag.isBlockTag(value.substring(1));
 		} else {
-			return ItemRegistryHelper.isRegisteredItem(value);
+			return BlockRegistryHelper.isRegisteredBlock(value);
 		}
 	}
 
@@ -104,7 +105,7 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 		if (value.startsWith("#")) {
 			return value;
 		} else {
-			return ItemRegistryHelper.getMatchingItemIdentifiers(value)
+			return BlockRegistryHelper.getMatchingBlockIdentifiers(value)
 					.skip(offset)
 					.findFirst()
 					.map(Identifier::toString)
@@ -117,43 +118,43 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 	 */
 	@Override
 	public AbstractWidget provideWidget(YACLScreen screen, Dimension<Integer> widgetDimension) {
-		return new ItemOrTagControllerElement(this, screen, widgetDimension);
+		return new BlockOrTagControllerElement(this, screen, widgetDimension);
 	}
 
-	public interface ItemOrTagControllerBuilder extends ControllerBuilder<ItemOrTag> {
-		static ItemOrTagControllerBuilderImpl create(Option<ItemOrTag> option) {
-			return new ItemOrTagControllerBuilderImpl(option);
+	public interface BlockOrTagControllerBuilder extends ControllerBuilder<BlockOrTag> {
+		static BlockOrTagControllerBuilderImpl create(Option<BlockOrTag> option) {
+			return new BlockOrTagControllerBuilderImpl(option);
 		}
 	}
 
-	public static class ItemOrTagControllerBuilderImpl extends AbstractControllerBuilderImpl<ItemOrTag> implements ItemOrTagControllerBuilder {
-		protected ItemOrTagControllerBuilderImpl(Option<ItemOrTag> option) {
+	public static class BlockOrTagControllerBuilderImpl extends AbstractControllerBuilderImpl<BlockOrTag> implements BlockOrTagControllerBuilder {
+		protected BlockOrTagControllerBuilderImpl(Option<BlockOrTag> option) {
 			super(option);
 		}
 
 		@Override
-		public Controller<ItemOrTag> build() {
-			return new ItemOrTagController(option);
+		public Controller<BlockOrTag> build() {
+			return new BlockOrTagController(option);
 		}
 	}
 
-	public static class ItemOrTagControllerElement extends AbstractDropdownControllerElement<ItemOrTag, Identifier> {
-		private final ItemOrTagController itemOrTagController;
+	public static class BlockOrTagControllerElement extends AbstractDropdownControllerElement<BlockOrTag, Identifier> {
+		private final BlockOrTagController blockOrTagController;
 
-		public ItemOrTagControllerElement(ItemOrTagController control, YACLScreen screen, Dimension<Integer> dim) {
+		public BlockOrTagControllerElement(BlockOrTagController control, YACLScreen screen, Dimension<Integer> dim) {
 			super(control, screen, dim);
-			this.itemOrTagController = control;
+			this.blockOrTagController = control;
 		}
 
 		@Override
 		public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 			if (inputFieldFocused && dropdownVisible && keyCode == InputUtil.GLFW_KEY_ENTER) {
 				if (inputField.startsWith("#") && getDropdownLength() > 0) {
-					inputField = getMatchingItemTagIdentifiers(inputField.substring(1))
+					inputField = getMatchingBlockTagIdentifiers(inputField.substring(1))
 							.skip(selectedIndex)
 							.findFirst()
 							.map(id -> "#" + id)
-							.orElseGet(itemOrTagController::getString);
+							.orElseGet(blockOrTagController::getString);
 					caretPos = getDefaultCaretPos();
 					updateControl();
 				}
@@ -164,9 +165,9 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 		@Override
 		public int getDropdownLength() {
 			if (inputField.startsWith("#")) {
-				return (int) getMatchingItemTagIdentifiers(inputField.substring(1)).count();
+				return (int) getMatchingBlockTagIdentifiers(inputField.substring(1)).count();
 			} else {
-				return (int) ItemRegistryHelper.getMatchingItemIdentifiers(inputField).count();
+				return (int) BlockRegistryHelper.getMatchingBlockIdentifiers(inputField).count();
 			}
 		}
 
@@ -176,9 +177,9 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 			setDimension(getDimension().withWidth(getDimension().width() - getDecorationPadding()));
 			super.drawValueText(graphics, mouseX, mouseY, delta);
 			setDimension(oldDimension);
-			ItemOrTag.fromString(inputField, true)
-					.ifPresent(itemOrTag -> graphics.drawItemWithoutEntity(
-							new ItemStack(itemOrTag.getAnyItem()),
+			BlockOrTag.fromString(inputField, true)
+					.ifPresent(blockOrTag -> graphics.drawItemWithoutEntity(
+							new ItemStack(blockOrTag.getAnyBlock()),
 							getDimension().xLimit() - getXPadding() - getDecorationPadding() + 2,
 							getDimension().y() + 2)
 					);
@@ -187,36 +188,39 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 		@Override
 		public List<Identifier> computeMatchingValues() {
 			if (inputField.startsWith("#")) {
-				return getMatchingItemTagIdentifiers(inputField.substring(1)).toList();
+				return getMatchingBlockTagIdentifiers(inputField.substring(1)).toList();
 			} else {
-				return ItemRegistryHelper.getMatchingItemIdentifiers(inputField).toList();
+				return BlockRegistryHelper.getMatchingBlockIdentifiers(inputField).toList();
 			}
 		}
 
 		@Override
 		public String getString(Identifier identifier) {
-			// If we are filtering for item tags, show item tags
+			// If we are filtering for block tags, show block tags
 			if (inputField.startsWith("#")) {
 				if (identifier.getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
 					return "#" + identifier.getPath();
 				}
 				return "#" + identifier;
 			} else {
-				return Registries.ITEM.get(identifier).toString();
+				if (identifier.getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
+					return identifier.getPath();
+				}
+				return identifier.toString();
 			}
 		}
 
 		@Override
 		protected void renderDropdownEntry(DrawContext graphics, Identifier identifier, int n) {
 			super.renderDropdownEntry(graphics, identifier, n);
-			Item item;
+			Block block;
 			if (inputField.startsWith("#")) {
-				TagKey<Item> tagKey = TagKey.of(RegistryKeys.ITEM, identifier);
-				item = new ItemOrTag(tagKey).getAnyItem();
+				TagKey<Block> tagKey = TagKey.of(RegistryKeys.BLOCK, identifier);
+				block = new BlockOrTag(tagKey).getAnyBlock();
 			} else {
-				item = Registries.ITEM.get(identifier);
+				block = Registries.BLOCK.get(identifier);
 			}
-			graphics.drawItemWithoutEntity(new ItemStack(item), getDimension().xLimit() - getDecorationPadding() - 2, getDimension().y() + n * getDimension().height() + 4);
+			graphics.drawItemWithoutEntity(new ItemStack(block), getDimension().xLimit() - getDecorationPadding() - 2, getDimension().y() + n * getDimension().height() + 4);
 		}
 
 		@Override
@@ -236,18 +240,21 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 
 		@Override
 		protected Text getValueText() {
-			if (inputField.isEmpty() || itemOrTagController == null)
+			if (inputField.isEmpty() || blockOrTagController == null)
 				return super.getValueText();
 
 			if (inputFieldFocused)
 				return Text.literal(inputField);
 
-			ItemOrTag itemOrTag = itemOrTagController.option.pendingValue();
-			if (itemOrTag.isItemTag() && itemOrTag.id().getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
-				return Text.literal("#" + itemOrTag.id().getPath());
+			BlockOrTag blockOrTag = blockOrTagController.option.pendingValue();
+			if (blockOrTag.isBlockTag() && blockOrTag.id().getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
+				return Text.literal("#" + blockOrTag.id().getPath());
+			}
+			if (blockOrTag.isBlock() && blockOrTag.getBlock().equals(Blocks.AIR)) {
+				return Text.empty();
 			}
 
-			return itemOrTag.getName();
+			return blockOrTag.getName();
 		}
 	}
 }

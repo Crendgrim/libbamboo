@@ -27,5 +27,5 @@ dependencies {
 
     implementation project(path: ":forge", configuration: "namedElements")
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    common(project(path: ":test-common", configuration: "namedElements")) { transitive false }
+    include(common(project(path: ":test-common", configuration: "namedElements"))) { transitive false }
 }

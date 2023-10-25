@@ -1,8 +1,10 @@
 package mod.crend.yaclx.render;
 
 import dev.isxander.yacl3.gui.image.ImageRenderer;
+import mod.crend.yaclx.type.BlockOrTag;
 import mod.crend.yaclx.type.ItemOrTag;
 import mod.crend.yaclx.auto.annotation.DescriptionImage;
+import net.minecraft.block.Block;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -41,6 +43,16 @@ public class ItemOrTagRenderer implements ImageRenderer {
 	@Override
 	public void close() { }
 
+	protected static class ItemListRenderer extends ItemOrTagRenderer implements ListImageRenderer<Item> {
+		public ItemListRenderer() {
+			super(List.of());
+		}
+
+		public void setList(List<Item> list) {
+			this.list.clear();
+			this.list.addAll(list);
+		}
+	}
 	protected static class ItemOrTagListRenderer extends ItemOrTagRenderer implements ListImageRenderer<ItemOrTag> {
 		public ItemOrTagListRenderer() {
 			super(List.of());
@@ -53,17 +65,38 @@ public class ItemOrTagRenderer implements ImageRenderer {
 			}
 		}
 	}
-	protected static class ItemListRenderer extends ItemOrTagRenderer implements ListImageRenderer<Item> {
-		public ItemListRenderer() {
+
+	protected static class BlockListRenderer extends ItemOrTagRenderer implements ListImageRenderer<Block> {
+		public BlockListRenderer() {
 			super(List.of());
 		}
 
-		public void setList(List<Item> list) {
+		public void setList(List<Block> list) {
 			this.list.clear();
-			this.list.addAll(list);
+			this.list.addAll(list.stream().map(Block::asItem).toList());
+		}
+	}
+	protected static class BlockOrTagListRenderer extends ItemOrTagRenderer implements ListImageRenderer<BlockOrTag> {
+		public BlockOrTagListRenderer() {
+			super(List.of());
+		}
+
+		public void setList(List<BlockOrTag> list) {
+			this.list.clear();
+			for (BlockOrTag blockOrTag : list) {
+				this.list.addAll(blockOrTag.getAllBlocks().stream().map(Block::asItem).toList());
+			}
 		}
 	}
 
+
+	public static class OfItem implements DescriptionImage.DescriptionImageRendererFactory<Item> {
+		@Override
+		public ImageRenderer create(Item value) {
+			if (value == null) return new ItemListRenderer();
+			return new ItemOrTagRenderer(value);
+		}
+	}
 	public static class OfItemOrTag implements DescriptionImage.DescriptionImageRendererFactory<ItemOrTag> {
 		@Override
 		public ImageRenderer create(ItemOrTag value) {
@@ -71,11 +104,18 @@ public class ItemOrTagRenderer implements ImageRenderer {
 			return new ItemOrTagRenderer(value.getAllItems());
 		}
 	}
-	public static class OfItem implements DescriptionImage.DescriptionImageRendererFactory<Item> {
+	public static class OfBlock implements DescriptionImage.DescriptionImageRendererFactory<Block> {
 		@Override
-		public ImageRenderer create(Item value) {
-			if (value == null) return new ItemListRenderer();
-			return new ItemOrTagRenderer(value);
+		public ImageRenderer create(Block value) {
+			if (value == null) return new BlockListRenderer();
+			return new ItemOrTagRenderer(value.asItem());
+		}
+	}
+	public static class OfBlockOrTag implements DescriptionImage.DescriptionImageRendererFactory<BlockOrTag> {
+		@Override
+		public ImageRenderer create(BlockOrTag value) {
+			if (value == null) return new BlockOrTagListRenderer();
+			return new ItemOrTagRenderer(value.getAllBlocks().stream().map(Block::asItem).toList());
 		}
 	}
 }
