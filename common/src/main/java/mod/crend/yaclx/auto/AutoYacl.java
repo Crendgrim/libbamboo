@@ -262,6 +262,15 @@ public class AutoYacl <T> {
 						field.isAnnotationPresent(Reverse.class)
 				);
 				if (builder != null) {
+					if (field.isAnnotationPresent(NumberOfItems.class)) {
+						NumberOfItems numberOfItems = field.getAnnotation(NumberOfItems.class);
+						if (numberOfItems.min() >= 0) {
+							builder.minimumNumberOfEntries(numberOfItems.min());
+						}
+						if (numberOfItems.max() >= 0) {
+							builder.maximumNumberOfEntries(numberOfItems.max());
+						}
+					}
 					ListOption<T> listOption = builder.build();
 					options.put(key, listOption);
 					listOptions.add(listOption);

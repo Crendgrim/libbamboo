@@ -111,12 +111,14 @@ public class Config {
 	@SerialEntry
 	@Category(name = "lists")
 	@DescriptionImage(ItemOrTagRenderer.OfItem.class)
+	@NumberOfItems(min = 3)
 	public List<Item> itemList = List.of(Items.APPLE, Items.PUMPKIN_PIE, Items.CAKE, Items.COOKIE);
 
 	@SerialEntry
 	@Reverse
 	@Category(name = "lists")
 	@DescriptionImage(ItemOrTagRenderer.OfItem.class)
+	@NumberOfItems(max = 6)
 	public List<Item> reversedList = List.of(Items.APPLE, Items.PUMPKIN_PIE, Items.CAKE, Items.COOKIE);
 
 	@SerialEntry
