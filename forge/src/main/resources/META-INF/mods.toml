@@ -4,7 +4,7 @@ license = "LGPL-3.0"
 
 [[mods]]
 modId = "yaclx"
-version = "1.9"
+version = "1.10"
 displayName = "YetAnotherConfigLibExtensions"
 authors = "Crendgrim"
 description = '''
