@@ -125,10 +125,11 @@ public class ConfigStore<T> {
 		boolean doSave = false;
 		try {
 			JsonObject json = JsonParser.parseString(Files.readString(path)).getAsJsonObject();
-			boolean update = jsonValidator.validate(json);
+			boolean update = false;
 			if (updater != null) {
 				update |= updater.updateConfigFile(json);
 			}
+			update |= jsonValidator.validate(json);
 			if (update) {
 				StringWriter stringWriter = new StringWriter();
 				JsonWriter jsonWriter = new JsonWriter(stringWriter);

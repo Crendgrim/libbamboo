@@ -52,6 +52,10 @@ public class ConfigJsonValidator <T> {
 	}
 
 	private <U> boolean checkField(Class<U> fieldType, Field field, Object defaultContainer, JsonObject container, JsonElement element) {
+		if (element.isJsonNull()) {
+			insertDefault(fieldType, defaultContainer, field, container);
+			return true;
+		}
 		if (fieldType == String.class) {
 			if (element instanceof JsonPrimitive) {
 				return false;
