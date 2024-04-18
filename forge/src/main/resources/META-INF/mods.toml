@@ -3,24 +3,24 @@ loaderVersion = "*"
 license = "LGPL-3.0"
 
 [[mods]]
-modId = "yaclx"
+modId = "libbamboo"
 version = "1.12"
-displayName = "YetAnotherConfigLibExtensions"
+displayName = "LibBamboo"
 authors = "Crendgrim"
 description = '''
-Utility Extensions to YetAnotherConfigLib
+Crendgrim's utility library
 '''
 logoFile = "icon.png"
 displayTest = "IGNORE_ALL_VERSION"
 
-[[dependencies.yaclx]]
+[[dependencies.libbamboo]]
 modId = "forge"
 mandatory = true
 versionRange = "[46,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.yaclx]]
+[[dependencies.libbamboo]]
 modId = "minecraft"
 mandatory = true
 versionRange = "[1.20,)"

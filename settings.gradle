@@ -7,7 +7,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "yaclx"
+rootProject.name = "libbamboo"
 
 include("common")
 include("fabric")

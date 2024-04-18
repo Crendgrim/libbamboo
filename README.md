@@ -1,4 +1,4 @@
-# YACLX: Yet Another Config Library Extensions
+# LibBamboo: Utility library
 
 Adds some useful extensions to YACL that are not fitting to be included upstream.
 
@@ -46,7 +46,7 @@ of the config if it is present, or use raw GSON if not. With this, the config fi
 and config values can be used without YACL being installed. However, no config GUI will be provided.
 
 ### NameableEnum
-Enum classes used in config should implement `mod.crend.yaclx.type.NameableEnum` instead of
+Enum classes used in config should implement `mod.crend.libbamboo.type.NameableEnum` instead of
 `dev.isxander.yacl3.api.NameableEnum` to allow parsing these values without YACL installed.
 
 ### ConfigUpdater
