@@ -188,7 +188,7 @@ public class ItemOrTag {
 	public Item getAnyItem() {
 		if (isItem) return item;
 		var tagEntries = Registries.ITEM.getEntryList(itemTag);
-		if (tagEntries.isPresent()) {
+		if (tagEntries.isPresent() && tagEntries.get().size() > 0) {
 			return tagEntries.get().get(0).value();
 		}
 		return PlatformUtils.getItemsFromTag(itemTag)

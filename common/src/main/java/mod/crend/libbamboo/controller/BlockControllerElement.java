@@ -49,9 +49,13 @@ public class BlockControllerElement extends AbstractDropdownControllerElement<Bl
 	}
 
 	@Override
-	protected void renderDropdownEntry(DrawContext graphics, Identifier identifier, int n) {
-		super.renderDropdownEntry(graphics, identifier, n);
-		graphics.drawItemWithoutEntity(new ItemStack(matchingBlocks.get(identifier)), getDimension().xLimit() - getDecorationPadding() - 2, getDimension().y() + n * getDimension().height() + 4);
+	protected void renderDropdownEntry(DrawContext graphics, Dimension<Integer> entryDimension, Identifier identifier) {
+		super.renderDropdownEntry(graphics, entryDimension, identifier);
+		graphics.drawItemWithoutEntity(
+				new ItemStack(matchingBlocks.get(identifier)),
+				entryDimension.xLimit() - 2,
+				entryDimension.y() + 1
+		);
 	}
 
 	@Override

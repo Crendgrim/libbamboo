@@ -22,7 +22,9 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -140,35 +142,12 @@ public class BlockOrTagController extends AbstractDropdownController<BlockOrTag>
 
 	public static class BlockOrTagControllerElement extends AbstractDropdownControllerElement<BlockOrTag, Identifier> {
 		private final BlockOrTagController blockOrTagController;
+		protected BlockOrTag currentBlock = null;
+		protected Map<Identifier, BlockOrTag> matchingBlocks = new HashMap<>();
 
 		public BlockOrTagControllerElement(BlockOrTagController control, YACLScreen screen, Dimension<Integer> dim) {
 			super(control, screen, dim);
 			this.blockOrTagController = control;
-		}
-
-		@Override
-		public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-			if (inputFieldFocused && dropdownVisible && keyCode == InputUtil.GLFW_KEY_ENTER) {
-				if (inputField.startsWith("#") && getDropdownLength() > 0) {
-					inputField = getMatchingBlockTagIdentifiers(inputField.substring(1))
-							.skip(selectedIndex)
-							.findFirst()
-							.map(id -> "#" + id)
-							.orElseGet(blockOrTagController::getString);
-					caretPos = getDefaultCaretPos();
-					updateControl();
-				}
-			}
-			return super.keyPressed(keyCode, scanCode, modifiers);
-		}
-
-		@Override
-		public int getDropdownLength() {
-			if (inputField.startsWith("#")) {
-				return (int) getMatchingBlockTagIdentifiers(inputField.substring(1)).count();
-			} else {
-				return (int) BlockRegistryHelper.getMatchingBlockIdentifiers(inputField).count();
-			}
 		}
 
 		@Override
@@ -177,21 +156,43 @@ public class BlockOrTagController extends AbstractDropdownController<BlockOrTag>
 			setDimension(getDimension().withWidth(getDimension().width() - getDecorationPadding()));
 			super.drawValueText(graphics, mouseX, mouseY, delta);
 			setDimension(oldDimension);
-			BlockOrTag.fromString(inputField, true)
-					.ifPresent(blockOrTag -> graphics.drawItemWithoutEntity(
-							new ItemStack(blockOrTag.getAnyBlock()),
-							getDimension().xLimit() - getXPadding() - getDecorationPadding() + 2,
-							getDimension().y() + 2)
-					);
+			if (currentBlock != null && currentBlock.getAnyBlock() != null) {
+				graphics.drawItemWithoutEntity(
+						new ItemStack(currentBlock.getAnyBlock()),
+						getDimension().xLimit() - getXPadding() - getDecorationPadding() + 2,
+						getDimension().y() + 2
+				);
+			}
 		}
 
 		@Override
 		public List<Identifier> computeMatchingValues() {
+			List<Identifier> identifiers;
 			if (inputField.startsWith("#")) {
-				return getMatchingBlockTagIdentifiers(inputField.substring(1)).toList();
+				identifiers = getMatchingBlockTagIdentifiers(inputField.substring(1)).toList();
+				BlockOrTag.fromString(inputField.substring(1), true)
+						.ifPresent(blockOrTag -> currentBlock = blockOrTag);
+				for (Identifier identifier : identifiers) {
+					matchingBlocks.put(identifier, new BlockOrTag(TagKey.of(RegistryKeys.BLOCK, identifier)));
+				}
 			} else {
-				return BlockRegistryHelper.getMatchingBlockIdentifiers(inputField).toList();
+				identifiers = BlockRegistryHelper.getMatchingBlockIdentifiers(inputField).toList();
+				currentBlock = new BlockOrTag(BlockRegistryHelper.getBlockFromName(inputField, null));
+				for (Identifier identifier : identifiers) {
+					matchingBlocks.put(identifier, new BlockOrTag(Registries.BLOCK.get(identifier)));
+				}
 			}
+			return identifiers;
+		}
+
+		@Override
+		protected void renderDropdownEntry(DrawContext graphics, Dimension<Integer> entryDimension, Identifier identifier) {
+			super.renderDropdownEntry(graphics, entryDimension, identifier);
+			graphics.drawItemWithoutEntity(
+					new ItemStack(matchingBlocks.get(identifier).getAnyBlock()),
+					entryDimension.xLimit() - 2,
+					entryDimension.y() + 1
+			);
 		}
 
 		@Override
@@ -208,19 +209,6 @@ public class BlockOrTagController extends AbstractDropdownController<BlockOrTag>
 				}
 				return identifier.toString();
 			}
-		}
-
-		@Override
-		protected void renderDropdownEntry(DrawContext graphics, Identifier identifier, int n) {
-			super.renderDropdownEntry(graphics, identifier, n);
-			Block block;
-			if (inputField.startsWith("#")) {
-				TagKey<Block> tagKey = TagKey.of(RegistryKeys.BLOCK, identifier);
-				block = new BlockOrTag(tagKey).getAnyBlock();
-			} else {
-				block = Registries.BLOCK.get(identifier);
-			}
-			graphics.drawItemWithoutEntity(new ItemStack(block), getDimension().xLimit() - getDecorationPadding() - 2, getDimension().y() + n * getDimension().height() + 4);
 		}
 
 		@Override

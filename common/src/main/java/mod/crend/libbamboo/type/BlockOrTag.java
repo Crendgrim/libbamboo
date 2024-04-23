@@ -191,7 +191,7 @@ public class BlockOrTag {
 	public Block getAnyBlock() {
 		if (isBlock) return block;
 		var tagEntries = Registries.BLOCK.getEntryList(blockTag);
-		if (tagEntries.isPresent()) {
+		if (tagEntries.isPresent() && tagEntries.get().size() > 0) {
 			return tagEntries.get().get(0).value();
 		}
 		return PlatformUtils.getBlocksFromTag(blockTag)

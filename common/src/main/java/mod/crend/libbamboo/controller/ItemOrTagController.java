@@ -8,6 +8,7 @@ import dev.isxander.yacl3.gui.AbstractWidget;
 import dev.isxander.yacl3.gui.YACLScreen;
 import dev.isxander.yacl3.gui.controllers.dropdown.AbstractDropdownController;
 import dev.isxander.yacl3.gui.controllers.dropdown.AbstractDropdownControllerElement;
+import dev.isxander.yacl3.gui.controllers.dropdown.ItemController;
 import dev.isxander.yacl3.gui.utils.ItemRegistryHelper;
 import dev.isxander.yacl3.impl.controller.AbstractControllerBuilderImpl;
 import mod.crend.libbamboo.type.ItemOrTag;
@@ -21,7 +22,10 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -102,6 +106,7 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 	@Override
 	protected String getValidValue(String value, int offset) {
 		if (value.startsWith("#")) {
+			// TODO look up all fitting item tags
 			return value;
 		} else {
 			return ItemRegistryHelper.getMatchingItemIdentifiers(value)
@@ -139,35 +144,12 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 
 	public static class ItemOrTagControllerElement extends AbstractDropdownControllerElement<ItemOrTag, Identifier> {
 		private final ItemOrTagController itemOrTagController;
+		protected ItemOrTag currentItem = null;
+		protected Map<Identifier, ItemOrTag> matchingItems = new HashMap<>();
 
 		public ItemOrTagControllerElement(ItemOrTagController control, YACLScreen screen, Dimension<Integer> dim) {
 			super(control, screen, dim);
 			this.itemOrTagController = control;
-		}
-
-		@Override
-		public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-			if (inputFieldFocused && dropdownVisible && keyCode == InputUtil.GLFW_KEY_ENTER) {
-				if (inputField.startsWith("#") && getDropdownLength() > 0) {
-					inputField = getMatchingItemTagIdentifiers(inputField.substring(1))
-							.skip(selectedIndex)
-							.findFirst()
-							.map(id -> "#" + id)
-							.orElseGet(itemOrTagController::getString);
-					caretPos = getDefaultCaretPos();
-					updateControl();
-				}
-			}
-			return super.keyPressed(keyCode, scanCode, modifiers);
-		}
-
-		@Override
-		public int getDropdownLength() {
-			if (inputField.startsWith("#")) {
-				return (int) getMatchingItemTagIdentifiers(inputField.substring(1)).count();
-			} else {
-				return (int) ItemRegistryHelper.getMatchingItemIdentifiers(inputField).count();
-			}
 		}
 
 		@Override
@@ -176,21 +158,39 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 			setDimension(getDimension().withWidth(getDimension().width() - getDecorationPadding()));
 			super.drawValueText(graphics, mouseX, mouseY, delta);
 			setDimension(oldDimension);
-			ItemOrTag.fromString(inputField, true)
-					.ifPresent(itemOrTag -> graphics.drawItemWithoutEntity(
-							new ItemStack(itemOrTag.getAnyItem()),
-							getDimension().xLimit() - getXPadding() - getDecorationPadding() + 2,
-							getDimension().y() + 2)
-					);
+			if (currentItem != null && currentItem.getAnyItem() != null) {
+				graphics.drawItemWithoutEntity(currentItem.getAnyItem().getDefaultStack(), getDimension().xLimit() - getXPadding() - getDecorationPadding() + 2, getDimension().y() + 2);
+			}
 		}
 
 		@Override
 		public List<Identifier> computeMatchingValues() {
+			List<Identifier> identifiers;
 			if (inputField.startsWith("#")) {
-				return getMatchingItemTagIdentifiers(inputField.substring(1)).toList();
+				identifiers = getMatchingItemTagIdentifiers(inputField.substring(1)).toList();
+				ItemOrTag.fromString(inputField.substring(1), true)
+						.ifPresent(itemOrTag -> currentItem = itemOrTag);
+				for (Identifier identifier : identifiers) {
+					matchingItems.put(identifier, new ItemOrTag(TagKey.of(RegistryKeys.ITEM, identifier)));
+				}
 			} else {
-				return ItemRegistryHelper.getMatchingItemIdentifiers(inputField).toList();
+				identifiers = ItemRegistryHelper.getMatchingItemIdentifiers(inputField).toList();
+				currentItem = new ItemOrTag(ItemRegistryHelper.getItemFromName(inputField, null));
+				for (Identifier identifier : identifiers) {
+					matchingItems.put(identifier, new ItemOrTag(Registries.ITEM.get(identifier)));
+				}
 			}
+			return identifiers;
+		}
+
+		@Override
+		protected void renderDropdownEntry(DrawContext graphics, Dimension<Integer> entryDimension, Identifier identifier) {
+			super.renderDropdownEntry(graphics, entryDimension, identifier);
+			graphics.drawItemWithoutEntity(
+					new ItemStack(matchingItems.get(identifier).getAnyItem()),
+					entryDimension.xLimit() - 2,
+					entryDimension.y() + 1
+			);
 		}
 
 		@Override
@@ -207,24 +207,6 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 		}
 
 		@Override
-		protected void renderDropdownEntry(DrawContext graphics, Identifier identifier, int n) {
-			super.renderDropdownEntry(graphics, identifier, n);
-			Item item;
-			if (inputField.startsWith("#")) {
-				TagKey<Item> tagKey = TagKey.of(RegistryKeys.ITEM, identifier);
-				item = new ItemOrTag(tagKey).getAnyItem();
-			} else {
-				item = Registries.ITEM.get(identifier);
-			}
-			graphics.drawItemWithoutEntity(new ItemStack(item), getDimension().xLimit() - getDecorationPadding() - 2, getDimension().y() + n * getDimension().height() + 4);
-		}
-
-		@Override
-		protected int getControlWidth() {
-			return super.getControlWidth() + getDecorationPadding();
-		}
-
-		@Override
 		protected int getDecorationPadding() {
 			return 16;
 		}
@@ -232,6 +214,11 @@ public class ItemOrTagController extends AbstractDropdownController<ItemOrTag> {
 		@Override
 		protected int getDropdownEntryPadding() {
 			return 4;
+		}
+
+		@Override
+		protected int getControlWidth() {
+			return super.getControlWidth() + getDecorationPadding();
 		}
 
 		@Override
