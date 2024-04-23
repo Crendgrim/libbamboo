@@ -8,7 +8,7 @@ version = "1.13"
 displayName = "libbamboo"
 authors = "Crendgrim"
 description = '''
-Crendgrim's helper library
+Library for my client-side mods
 '''
 logoFile = "icon.png"
 displayTest = "IGNORE_ALL_VERSION"

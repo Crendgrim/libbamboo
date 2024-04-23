@@ -7,13 +7,12 @@ pluginManagement {
     }
 }
 
-rootProject.name = "libbamboo"
+rootProject.name = mod_id
 
 include("common")
-include("fabric")
-include("forge")
-include("neoforge")
-
 include("test-common")
-include("test-fabric")
-include("test-forge")
+
+enabled_platforms.split(",").each {
+    include(it)
+    include("test-" + it)
+}

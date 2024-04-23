@@ -2,8 +2,8 @@ package mod.crend.libbamboo.fabric;
 
 import mod.crend.libbamboo.LibBamboo;
 import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;

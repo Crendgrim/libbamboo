@@ -19,10 +19,11 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
 
     modImplementation fabricApi.module("fabric-api-base", project.fabric_api_version)
-    modImplementation fabricApi.module("fabric-convention-tags-v1", project.fabric_api_version)
+    modImplementation fabricApi.module("fabric-convention-tags-v2", project.fabric_api_version)
     modImplementation fabricApi.module("fabric-client-tags-api-v1", project.fabric_api_version)
+    modImplementation(fabricApi.module("fabric-lifecycle-events-v1", project.fabric_api_version))
 
-    modImplementation "dev.isxander.yacl:yet-another-config-lib-fabric:${project.yacl_version}"
+    modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}-fabric"
     modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
