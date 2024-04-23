@@ -13,6 +13,9 @@ Library for my client-side mods
 logoFile = "icon.png"
 displayTest = "IGNORE_ALL_VERSION"
 
+[[mixins]]
+config = "libbamboo-common.mixins.json"
+
 [[dependencies.libbamboo]]
 modId = "neoforge"
 mandatory = true

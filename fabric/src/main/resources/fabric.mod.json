@@ -3,8 +3,8 @@
   "id": "libbamboo",
   "version": "${version}",
 
-  "name": "YetAnotherConfigLibExtensions",
-  "description": "Crendgrim's utility library",
+  "name": "libbamboo",
+  "description": "Library for my client-side mods",
   "authors": [
     "Crendgrim"
   ],
@@ -15,6 +15,13 @@
   "icon": "assets/libbamboo/icon.png",
 
   "environment": "client",
+  "mixins": [
+    "libbamboo-common.mixins.json"
+  ],
+
+  "entrypoints": {
+    "client": ["mod.crend.libbamboo.fabric.LibBambooMod"]
+  },
 
   "depends": {
     "fabricloader": "*",
