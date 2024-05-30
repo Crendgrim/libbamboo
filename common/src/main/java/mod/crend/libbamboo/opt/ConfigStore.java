@@ -45,6 +45,7 @@ public class ConfigStore<T> {
 		return new GsonBuilder()
 				.setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
 				.setPrettyPrinting()
+				.registerTypeHierarchyAdapter(Identifier.class, new IdentifierTypeAdapter())
 				.registerTypeHierarchyAdapter(Color.class, new ColorTypeAdapter())
 				.registerTypeHierarchyAdapter(Item.class, new ItemTypeAdapter())
 				.registerTypeHierarchyAdapter(ItemOrTag.class, new ItemOrTagTypeAdapter())

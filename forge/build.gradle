@@ -30,8 +30,6 @@ repositories {
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
 
-    modImplementation "dev.isxander.yacl:yet-another-config-lib-forge:${project.yacl_version}"
-
     modImplementation "dev.su5ed.sinytra.fabric-api:fabric-api:${project.forgified_fabric_api_version}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }

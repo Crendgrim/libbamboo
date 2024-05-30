@@ -10,24 +10,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class BlockRegistryHelper {
-	private static Block getBlockFromNameImpl(String value) {
-		String namespace, blockName;
-		int sep = value.indexOf(Identifier.NAMESPACE_SEPARATOR);
-		value = value.toLowerCase();
-		if (sep == -1) {
-			namespace = Identifier.DEFAULT_NAMESPACE;
-			blockName = value;
-		} else {
-			namespace = value.substring(0, sep);
-			blockName = value.substring(sep + 1);
-		}
-		Identifier identifier = new Identifier(namespace, blockName);
-		if (Registries.BLOCK.containsId(identifier)) {
-			return Registries.BLOCK.get(identifier);
-		} else {
-			return null;
-		}
-	}
 
 	/**
 	 * Checks whether the given string is an identifier referring to a known block
@@ -36,7 +18,12 @@ public class BlockRegistryHelper {
 	 * @return true if the identifier refers to a registered block, false otherwise
 	 */
 	public static boolean isRegisteredBlock(String identifier) {
-		return getBlockFromNameImpl(identifier) != null;
+		try {
+			Identifier blockIdentifier = new Identifier(identifier.toLowerCase());
+			return Registries.BLOCK.containsId(blockIdentifier);
+		} catch (InvalidIdentifierException var2) {
+			return false;
+		}
 	}
 
 	public static Block getBlockFromName(String identifier, Block defaultBlock) {

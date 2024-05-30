@@ -1,5 +1,6 @@
 package mod.crend.libbamboo.auto.internal;
 
+import dev.isxander.yacl3.api.Controller;
 import dev.isxander.yacl3.api.ListOption;
 import dev.isxander.yacl3.api.Option;
 import dev.isxander.yacl3.api.controller.*;
@@ -134,6 +135,18 @@ class TypedController {
 		return BlockOrTagController.BlockOrTagControllerBuilder::create;
 	}
 
+	private static <T, U extends Option<T>> Function<U, Controller<T>> getCustomController(Field field) {
+		CustomController customController = field.getAnnotation(CustomController.class);
+		try {
+			@SuppressWarnings("unchecked")
+			CustomController.ControllerFactory<T> factory
+					= (CustomController.ControllerFactory<T>) customController.value().getConstructor().newInstance();
+			return factory::create;
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private static <T> Option.Builder<T> makeBuilder(FieldParser<?> fieldParser) {
 		@SuppressWarnings("unchecked")
 		FieldParser<T> parser = (FieldParser<T>) fieldParser;
@@ -167,6 +180,13 @@ class TypedController {
 	private static Option.Builder<?> internalFromType(FieldParser<?> fieldParser) {
 		Field field = fieldParser.field();
 		Class<?> type = field.getType();
+
+		if (field.isAnnotationPresent(CustomController.class)) {
+
+			return TypedController.makeBuilder(fieldParser)
+					.customController(getCustomController(field));
+
+		}
 
 		if (type.equals(boolean.class)) {
 
@@ -239,6 +259,13 @@ class TypedController {
 	@SuppressWarnings("unchecked")
 	public static ListOption.Builder<?> internalFromListType(Class<?> type, FieldParser<?> fieldParser, boolean reverse) {
 		Field field = fieldParser.field();
+
+		if (field.isAnnotationPresent(CustomController.class)) {
+
+			return TypedController.makeListBuilder(fieldParser, reverse)
+					.customController(getCustomController(field));
+
+		}
 
 		if (type.equals(boolean.class)) {
 

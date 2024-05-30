@@ -4,6 +4,8 @@ import com.google.gson.FieldNamingPolicy;
 import dev.isxander.yacl3.api.YetAnotherConfigLib;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
+import mod.crend.libbamboo.event.ClientEvent;
+import mod.crend.libbamboo.event.ClientEventFactory;
 import mod.crend.libbamboo.type.*;
 import mod.crend.libbamboo.auto.AutoYacl;
 import net.minecraft.block.Block;
@@ -18,8 +20,7 @@ import java.nio.file.Path;
  */
 public class WithYacl<T> {
 	public final ConfigClassHandler<T> instance;
-	@SuppressWarnings("CanBeFinal")
-	public ConfigChangeListener configChangeListener = () -> { };
+	public ClientEvent<ConfigChangeListener> configChangeEvent = ClientEventFactory.createArrayBacked();
 	public final AutoYacl<T> autoYacl;
 	public T dummyConfig = null;
 
@@ -30,6 +31,7 @@ public class WithYacl<T> {
 						.setPath(path)
 						.appendGsonBuilder(builder -> builder
 									.setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
+									.registerTypeHierarchyAdapter(Identifier.class, new IdentifierTypeAdapter())
 									.registerTypeHierarchyAdapter(ItemOrTag.class, new ItemOrTagTypeAdapter())
 									.registerTypeHierarchyAdapter(Block.class, new BlockTypeAdapter())
 									.registerTypeHierarchyAdapter(BlockOrTag.class, new BlockOrTagTypeAdapter())
@@ -61,7 +63,7 @@ public class WithYacl<T> {
 						.parse(builder)
 						.save(() -> {
 							instance.save();
-							configChangeListener.onConfigChange();
+							configChangeEvent.invoker().onConfigChange();
 						})
 		);
 	}
@@ -72,7 +74,6 @@ public class WithYacl<T> {
 	}
 
 	public interface ConfigChangeListener {
-		@SuppressWarnings("EmptyMethod")
 		void onConfigChange();
 	}
 }

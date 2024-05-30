@@ -130,6 +130,16 @@ public class BlockOrTag {
 	 */
 	public static Optional<BlockOrTag> fromString(String identifier, boolean ensureBlockTagExists) {
 		if (identifier.startsWith("#")) {
+			if (identifier.contains(":")) {
+				String[] segments = identifier.split(":");
+				if (!Identifier.isNamespaceValid(segments[0]) || !Identifier.isPathValid(segments[1])) {
+					return Optional.empty();
+				}
+			} else {
+				if (!Identifier.isPathValid(identifier)) {
+					return Optional.empty();
+				}
+			}
 			if (ensureBlockTagExists && !isBlockTag(identifier.substring(1))) {
 				return Optional.empty();
 			}

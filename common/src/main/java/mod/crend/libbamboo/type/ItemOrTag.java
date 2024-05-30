@@ -127,6 +127,16 @@ public class ItemOrTag {
 	 */
 	public static Optional<ItemOrTag> fromString(String identifier, boolean ensureItemTagExists) {
 		if (identifier.startsWith("#")) {
+			if (identifier.contains(":")) {
+				String[] segments = identifier.split(":");
+				if (!Identifier.isNamespaceValid(segments[0]) || !Identifier.isPathValid(segments[1])) {
+					return Optional.empty();
+				}
+			} else {
+				if (!Identifier.isPathValid(identifier)) {
+					return Optional.empty();
+				}
+			}
 			if (ensureItemTagExists && !isItemTag(identifier.substring(1))) {
 				return Optional.empty();
 			}
