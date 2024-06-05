@@ -1,6 +1,7 @@
 package mod.crend.libbamboo.auto.internal;
 
 import dev.isxander.yacl3.api.*;
+import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.gui.image.ImageRenderer;
 import mod.crend.libbamboo.auto.annotation.*;
 import mod.crend.libbamboo.render.ListImageRenderer;
@@ -135,8 +136,8 @@ public record FieldParser<T>(
 		);
 	}
 
-	public Option.Builder<T> optionBuilder(Map<String, List<EnableIf>> dependencies) {
-		Option.Builder<T> optionBuilder = TypedController.fromType(this);
+	public Option.Builder<T> optionBuilder(Map<String, List<EnableIf>> dependencies, ConfigClassHandler<?> configClassHandler) {
+		Option.Builder<T> optionBuilder = TypedController.fromType(this, modId, configClassHandler);
 		if (optionBuilder != null) {
 			setCommonAttributes(optionBuilder, dependencies);
 			return optionBuilder;

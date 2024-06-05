@@ -4,8 +4,12 @@ import dev.isxander.yacl3.api.Controller;
 import dev.isxander.yacl3.api.ListOption;
 import dev.isxander.yacl3.api.Option;
 import dev.isxander.yacl3.api.controller.*;
+import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import mod.crend.libbamboo.controller.BlockController;
 import mod.crend.libbamboo.controller.BlockOrTagController;
+import mod.crend.libbamboo.controller.NestedController;
+import mod.crend.libbamboo.controller.SubScreenController;
+import mod.crend.libbamboo.controller.NestingController;
 import mod.crend.libbamboo.type.BlockOrTag;
 import mod.crend.libbamboo.type.ItemOrTag;
 import mod.crend.libbamboo.auto.annotation.*;
@@ -91,7 +95,7 @@ class TypedController {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T extends Enum<T>> Function<Option<T>, ControllerBuilder<T>> getEnumController(Field field, Class<?> clazz) {
+	private static <T> Function<Option<T>, ControllerBuilder<T>> getEnumController(Field field, Class<Enum> clazz) {
 		Decorate decorate = field.getAnnotation(Decorate.class);
 		if (decorate != null) {
 			if (!DecoratedEnumController.Decorator.class.isAssignableFrom(decorate.decorator())) {
@@ -99,16 +103,16 @@ class TypedController {
 			}
 			try {
 				DecoratedEnumController.Decorator<T> decorator = (DecoratedEnumController.Decorator<T>) decorate.decorator().getConstructor().newInstance();
-				return (opt -> DecoratedEnumController.DecoratedEnumControllerBuilder.create(opt)
-						.enumClass((Class<T>) clazz)
-						.decorator(decorator)
+				return (opt -> (ControllerBuilder<T>) DecoratedEnumController.DecoratedEnumControllerBuilder.create((Option<Enum>) opt)
+						.enumClass(clazz)
+						.decorator((DecoratedEnumController.Decorator<Enum>) decorator)
 				);
 			} catch (ReflectiveOperationException e) {
 				throw new RuntimeException(e);
 			}
 		} else {
-			return (opt -> EnumControllerBuilder.create(opt)
-					.enumClass((Class<T>) clazz)
+			return (opt -> (ControllerBuilder<T>) EnumControllerBuilder.create((Option<Enum>) opt)
+					.enumClass(clazz)
 			);
 		}
 	}
@@ -135,16 +139,41 @@ class TypedController {
 		return BlockOrTagController.BlockOrTagControllerBuilder::create;
 	}
 
-	private static <T, U extends Option<T>> Function<U, Controller<T>> getCustomController(Field field) {
+	private static <T> Function<Option<T>, ControllerBuilder<T>> getSubScreenController(Field field, Class<T> clazz, String modId, ConfigClassHandler<?> configClassHandler) {
+		return option -> SubScreenController.SubScreenControllerBuilder.create(option)
+				.clazz(clazz)
+				.modId(modId)
+				.outerHandler(configClassHandler);
+	}
+	private static class CustomControllerBuilder<T> implements ControllerBuilder<T> {
+
+		Option<T> option;
+		CustomController.ControllerFactory<T> factory;
+
+		public CustomControllerBuilder(Option<T> option, CustomController.ControllerFactory<T> factory) {
+			this.option = option;
+			this.factory = factory;
+		}
+
+		@Override
+		public Controller<T> build() {
+			return factory.create(option);
+		}
+	}
+	private static <T, U extends Option<T>> Function<U, ControllerBuilder<T>> getCustomController(Field field) {
 		CustomController customController = field.getAnnotation(CustomController.class);
 		try {
 			@SuppressWarnings("unchecked")
 			CustomController.ControllerFactory<T> factory
 					= (CustomController.ControllerFactory<T>) customController.value().getConstructor().newInstance();
-			return factory::create;
+			return opt -> new CustomControllerBuilder<>(opt, factory);
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private static Function<Option<Boolean>, ControllerBuilder<Boolean>> getNestedToggleController(Field field) {
+		return NestingController.NestingControllerBuilder::create;
 	}
 
 	private static <T> Option.Builder<T> makeBuilder(FieldParser<?> fieldParser) {
@@ -172,170 +201,130 @@ class TypedController {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> Option.Builder<T> fromType(FieldParser<T> fieldParser) {
-		return (Option.Builder<T>) internalFromType(fieldParser);
-	}
+	private static <T> Function<Option<T>, ControllerBuilder<T>> getController(Field field, Class<T> type, String modId, ConfigClassHandler<?> configClassHandler) {
 
-	@SuppressWarnings("unchecked")
-	private static Option.Builder<?> internalFromType(FieldParser<?> fieldParser) {
-		Field field = fieldParser.field();
-		Class<?> type = field.getType();
+		if (field.isAnnotationPresent(SubScreen.class)) {
+			return getSubScreenController(field, type, modId, configClassHandler);
+		}
 
 		if (field.isAnnotationPresent(CustomController.class)) {
+			return getCustomController(field);
+		}
 
-			return TypedController.makeBuilder(fieldParser)
-					.customController(getCustomController(field));
-
+		if (field.isAnnotationPresent(Nesting.class)) {
+			return opt -> (ControllerBuilder<T>) getNestedToggleController(field).apply((Option<Boolean>) opt);
 		}
 
 		if (type.equals(boolean.class)) {
 
-			return TypedController.<Boolean>makeBuilder(fieldParser)
-					.controller(getBooleanController(field));
+			return opt -> (ControllerBuilder<T>) getBooleanController(field).apply((Option<Boolean>) opt);
 
 		} else if (type.equals(int.class)) {
 
-			return TypedController.<Integer>makeBuilder(fieldParser)
-					.controller(getIntegerController(field));
+			return opt -> (ControllerBuilder<T>) getIntegerController(field).apply((Option<Integer>) opt);
 
 		} else if (type.equals(long.class)) {
 
-			return TypedController.<Long>makeBuilder(fieldParser)
-					.controller(getLongController(field));
+			return opt -> (ControllerBuilder<T>) getLongController(field).apply((Option<Long>) opt);
 
 		} else if (type.equals(float.class)) {
 
-			return TypedController.<Float>makeBuilder(fieldParser)
-					.controller(getFloatController(field));
+			return opt -> (ControllerBuilder<T>) getFloatController(field).apply((Option<Float>) opt);
 
 		} else if (type.equals(double.class)) {
 
-			return TypedController.<Double>makeBuilder(fieldParser)
-					.controller(getDoubleController(field));
+			return opt -> (ControllerBuilder<T>) getDoubleController(field).apply((Option<Double>) opt);
 
 		} else if (type.equals(String.class)) {
 
-			return TypedController.<String>makeNullableBuilder(fieldParser)
-					.controller(getStringController(field));
+			return opt -> (ControllerBuilder<T>) getStringController(field).apply((Option<String>) opt);
 
 		} else if (type.isEnum()) {
 
-			return TypedController.<Enum>makeBuilder(fieldParser)
-					.controller(getEnumController(field, field.getType()));
+			return opt -> (ControllerBuilder<T>) getEnumController(field, (Class<Enum>) field.getType()).apply((Option<Object>) opt);
 
 		} else if (type.equals(Color.class)) {
 
-			return TypedController.<Color>makeBuilder(fieldParser)
-					.controller(getColorController(field));
+			return opt -> (ControllerBuilder<T>) getColorController(field).apply((Option<Color>) opt);
 
 		} else if (type.equals(Item.class)) {
 
-			return TypedController.<Item>makeBuilder(fieldParser)
-					.controller(getItemController(field));
+			return opt -> (ControllerBuilder<T>) getItemController(field).apply((Option<Item>) opt);
 
 		} else if (type.equals(ItemOrTag.class)) {
 
-			return TypedController.<ItemOrTag>makeBuilder(fieldParser)
-					.controller(getItemOrTagController(field));
+			return opt -> (ControllerBuilder<T>) getItemOrTagController(field).apply((Option<ItemOrTag>) opt);
 
 		} else if (type.equals(Block.class)) {
 
-			return TypedController.<Block>makeBuilder(fieldParser)
-					.controller(getBlockController(field));
+			return opt -> (ControllerBuilder<T>) getBlockController(field).apply((Option<Block>) opt);
 
 		} else if (type.equals(BlockOrTag.class)) {
 
-			return TypedController.<BlockOrTag>makeBuilder(fieldParser)
-					.controller(getBlockOrTagController(field));
+			return opt -> (ControllerBuilder<T>) getBlockOrTagController(field).apply((Option<BlockOrTag>) opt);
 
 		}
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> Option.Builder<T> fromType(FieldParser<T> fieldParser, String modId, ConfigClassHandler<?> configClassHandler) {
+		Field field = fieldParser.field();
+		Class<T> type = (Class<T>) field.getType();
+
+		Function<Option<T>, ControllerBuilder<T>> controller = getController(field, type, modId, configClassHandler);
+		if (controller == null) return null;
+
+		if (field.isAnnotationPresent(Nested.class)) {
+			Function<Option<T>, ControllerBuilder<T>> nestedController = controller;
+			controller = opt -> NestedController.NestedControllerBuilder.create(opt).nestedControl(nestedController.apply(opt).build());
+		}
+
+		Option.Builder<T> builder;
+		if (type.equals(String.class)) {
+			builder = TypedController.makeNullableBuilder(fieldParser);
+		} else {
+			builder = TypedController.makeBuilder(fieldParser);
+		}
+
+		return builder.controller(controller);
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> ListOption.Builder<T> fromListType(Class<T> type, FieldParser<?> fieldParser, boolean reverse) {
-		return (ListOption.Builder<T>) internalFromListType(type, fieldParser, reverse);
-	}
-	@SuppressWarnings("unchecked")
-	public static ListOption.Builder<?> internalFromListType(Class<?> type, FieldParser<?> fieldParser, boolean reverse) {
 		Field field = fieldParser.field();
 
-		if (field.isAnnotationPresent(CustomController.class)) {
+		Function<Option<T>, ControllerBuilder<T>> controller = getController(field, type, null, null);
+		if (controller == null) return null;
 
-			return TypedController.makeListBuilder(fieldParser, reverse)
-					.customController(getCustomController(field));
-
+		if (field.isAnnotationPresent(Nested.class)) {
+			Function<Option<T>, ControllerBuilder<T>> nestedController = controller;
+			controller = opt -> NestedController.NestedControllerBuilder.create(opt).nestedControl(nestedController.apply(opt).build());
 		}
 
-		if (type.equals(boolean.class)) {
-
-			return TypedController.<Boolean>makeListBuilder(fieldParser, reverse)
-					.controller(getBooleanController(field));
-
-		} else if (type.equals(int.class)) {
-
-			return TypedController.<Integer>makeListBuilder(fieldParser, reverse)
-					.controller(getIntegerController(field));
-
-		} else if (type.equals(long.class)) {
-
-			return TypedController.<Long>makeListBuilder(fieldParser, reverse)
-					.controller(getLongController(field));
-
-		} else if (type.equals(float.class)) {
-
-			return TypedController.<Float>makeListBuilder(fieldParser, reverse)
-					.controller(getFloatController(field));
-
-		} else if (type.equals(double.class)) {
-
-			return TypedController.<Double>makeListBuilder(fieldParser, reverse)
-					.controller(getDoubleController(field));
-
-		} else if (type.equals(String.class)) {
-
-			return TypedController.<String>makeListBuilder(fieldParser, reverse)
-					.initial("")
-					.controller(getStringController(field));
-
-		} else if (type.isEnum()) {
-
-			return TypedController.<Enum>makeListBuilder(fieldParser, reverse)
+		if (type.isEnum()) {
+			return (ListOption.Builder<T>) TypedController.<Enum>makeListBuilder(fieldParser, reverse)
 					.initial((Enum) type.getEnumConstants()[0])
-					.controller(getEnumController(field, (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0]));
-
-		} else if (type.equals(Color.class)) {
-
-			return TypedController.<Color>makeListBuilder(fieldParser, reverse)
-					.initial(Color.BLACK)
-					.controller(getColorController(field));
-
-		} else if (type.equals(Item.class)) {
-
-			return TypedController.<Item>makeListBuilder(fieldParser, reverse)
-					.initial(Items.AIR)
-					.controller(getItemController(field));
-
-		} else if (type.equals(ItemOrTag.class)) {
-
-			return TypedController.<ItemOrTag>makeListBuilder(fieldParser, reverse)
-					.initial(new ItemOrTag(Items.AIR))
-					.controller(getItemOrTagController(field));
-
-		} else if (type.equals(Block.class)) {
-
-			return TypedController.<Block>makeListBuilder(fieldParser, reverse)
-					.initial(Blocks.AIR)
-					.controller(getBlockController(field));
-
-		} else if (type.equals(BlockOrTag.class)) {
-
-			return TypedController.<BlockOrTag>makeListBuilder(fieldParser, reverse)
-					.initial(new BlockOrTag(Blocks.AIR))
-					.controller(getBlockOrTagController(field));
-
+					.controller(getEnumController(field, (Class<Enum>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0]));
 		}
 
-		return null;
+		ListOption.Builder<T> listBuilder = TypedController.<T>makeListBuilder(fieldParser, reverse)
+				.controller(controller);
+
+		if (type.equals(String.class)) {
+			((ListOption.Builder<String>) listBuilder).initial("");
+		} else if (type.equals(Color.class)) {
+			((ListOption.Builder<Color>) listBuilder).initial(Color.BLACK);
+		} else if (type.equals(Item.class)) {
+			((ListOption.Builder<Item>) listBuilder).initial(Items.AIR);
+		} else if (type.equals(ItemOrTag.class)) {
+			((ListOption.Builder<ItemOrTag>) listBuilder).initial(new ItemOrTag(Items.AIR));
+		} else if (type.equals(Block.class)) {
+			((ListOption.Builder<Block>) listBuilder).initial(Blocks.AIR);
+		} else if (type.equals(BlockOrTag.class)) {
+			((ListOption.Builder<BlockOrTag>) listBuilder).initial(new BlockOrTag(Blocks.AIR));
+		}
+		return listBuilder;
 	}
+
 }

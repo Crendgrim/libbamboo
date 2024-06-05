@@ -41,7 +41,7 @@ public class WithYacl<T> {
 
 		instance.load();
 
-		autoYacl = new AutoYacl<>(configClass, instance.defaults(), instance.instance());
+		autoYacl = new AutoYacl<>(instance);
 	}
 
 	public T getConfig() {

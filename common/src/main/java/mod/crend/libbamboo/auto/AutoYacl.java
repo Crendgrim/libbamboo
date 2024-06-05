@@ -1,9 +1,11 @@
 package mod.crend.libbamboo.auto;
 
 import dev.isxander.yacl3.api.*;
+import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import mod.crend.libbamboo.auto.annotation.*;
 import mod.crend.libbamboo.auto.internal.FieldParser;
+import mod.crend.libbamboo.controller.NestingController;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -30,8 +32,10 @@ public class AutoYacl <T> {
 		protected final Map<String, OptionGroup.Builder> groups;
 		protected final Map<String, Option<?>> options;
 		protected final Map<String, List<EnableIf>> dependencies;
+		protected final List<Pair<String, NestingController>> nested;
 		protected final String modId;
-		
+		protected final ConfigClassHandler<?> configClassHandler;
+
 		protected Wrapper(
 				String modId,
 				OptionAddable builder,
@@ -40,7 +44,9 @@ public class AutoYacl <T> {
 				@Nullable Object bDummyConfig,
 				Map<String, OptionGroup.Builder> groups,
 				Map<String, Option<?>> options,
-			    Map<String, List<EnableIf>> dependencies
+			    Map<String, List<EnableIf>> dependencies,
+				List<Pair<String, NestingController>> nested,
+				ConfigClassHandler<?> configClassHandler
 		) {
 			this.modId = modId;
 			this.builder = builder;
@@ -50,6 +56,8 @@ public class AutoYacl <T> {
 			this.groups = groups;
 			this.options = options;
 			this.dependencies = dependencies;
+			this.nested = nested;
+			this.configClassHandler = configClassHandler;
 		}
 
 		/**
@@ -117,7 +125,9 @@ public class AutoYacl <T> {
 						bDummyConfig == null ? null : field.get(bDummyConfig),
 						groups,
 						options,
-						dependencies
+						dependencies,
+						nested,
+						configClassHandler
 				);
 				registerMemberFields(transitiveWrapper, key, field);
 			} catch (IllegalAccessException e) {
@@ -137,10 +147,14 @@ public class AutoYacl <T> {
 			}
 
 			FieldParser<T> fieldParser = new FieldParser<>(modId, key, field, bDefaults, bParent, bDummyConfig, false);
-			Option.Builder<T> option = fieldParser.optionBuilder(dependencies);
+			Option.Builder<T> option = fieldParser.optionBuilder(dependencies, configClassHandler);
 			if (option != null) {
 				options.put(key, option.build());
 				containingBuilder.option(options.get(key));
+				Nesting nesting = field.getAnnotation(Nesting.class);
+				if (nesting != null) {
+					nested.add(new Pair<>(nesting.value(), (NestingController) options.get(key).controller()));
+				}
 			} else {
 				registerObject(containingBuilder, key, field);
 			}
@@ -157,12 +171,13 @@ public class AutoYacl <T> {
 				Object parent,
 				@Nullable Object dummy,
 				Map<String,
-				List<EnableIf>> dependencies
+				List<EnableIf>> dependencies,
+				ConfigClassHandler<?> configClassHandler
 		) {
 			assert(field.getDeclaringClass().isInstance(defaults));
 			assert(field.getDeclaringClass().isInstance(parent));
 			FieldParser<T> fieldParser = new FieldParser<>(modId, key, field, defaults, parent, dummy, false);
-			return fieldParser.optionBuilder(dependencies);
+			return fieldParser.optionBuilder(dependencies, configClassHandler);
 		}
 
 
@@ -180,13 +195,16 @@ public class AutoYacl <T> {
 				Object bDefaults,
 				Object bParent,
 				@Nullable Object bDummyConfig,
-				Map<String, List<EnableIf>> dependencies
+				Map<String, List<EnableIf>> dependencies,
+				ConfigClassHandler<?> configClassHandler
 		) {
 			// Each category uses its own set of groups and options
 			super(modId, builder, bDefaults, bParent, bDummyConfig,
 					new LinkedHashMap<>() /* groups */,
 					new LinkedHashMap<>() /* options */,
-					dependencies);
+					dependencies,
+					new ArrayList<>(),
+					configClassHandler);
 		}
 		private CategoryWrapper(String modId,
 								OptionAddable builder,
@@ -195,9 +213,11 @@ public class AutoYacl <T> {
 								@Nullable Object bDummyConfig,
 								Map<String, OptionGroup.Builder> groups,
 								Map<String, Option<?>> options,
-								Map<String, List<EnableIf>> dependencies
+								Map<String, List<EnableIf>> dependencies,
+								List<Pair<String, NestingController>> nested,
+								ConfigClassHandler<?> configClassHandler
 		) {
-			super(modId, builder, bDefaults, bParent, bDummyConfig, groups, options, dependencies);
+			super(modId, builder, bDefaults, bParent, bDummyConfig, groups, options, dependencies, nested, configClassHandler);
 		}
 
 		/**
@@ -218,7 +238,9 @@ public class AutoYacl <T> {
 						bDummyConfig == null ? null : field.get(bDummyConfig),
 						groups,
 						options,
-						dependencies
+						dependencies,
+						nested,
+						configClassHandler
 				);
 				registerMemberFields(transitiveWrapper, key, field);
 			} catch (IllegalAccessException e) {
@@ -294,7 +316,9 @@ public class AutoYacl <T> {
 						bDummyConfig == null ? null : field.get(bDummyConfig),
 						groups,
 						options,
-						dependencies
+						dependencies,
+						nested,
+						configClassHandler
 				);
 				for (Field memberField : field.getType().getFields()) {
 					groupWrapper.register(key + "." + memberField.getName(), memberField);
@@ -310,6 +334,9 @@ public class AutoYacl <T> {
 		 * @return a built category
 		 */
 		public ConfigCategory build() {
+			for (Pair<String, NestingController> toggles : nested) {
+				toggles.getRight().setNestedOption(options.get(toggles.getLeft()));
+			}
 			ConfigCategory.Builder categoryBuilder = (ConfigCategory.Builder) builder;
 			for (var list : listOptions) {
 				categoryBuilder.group(list);
@@ -325,10 +352,11 @@ public class AutoYacl <T> {
 		return new CategoryWrapper(
 				modId,
 				ConfigCategory.createBuilder().name(Text.translatable(modId + ".category." + categoryName)),
-				defaults,
-				config,
+				configClassHandler.defaults(),
+				configClassHandler.instance(),
 				dummyConfig,
-				dependencies);
+				dependencies,
+				configClassHandler);
 	}
 
 	/**
@@ -345,43 +373,38 @@ public class AutoYacl <T> {
 	 * }
 	 * </pre>
 	 *
-	 * @param configClass the class referring to T
-	 * @param defaults default config, to revert options to default from
-	 * @param config current config
+	 * @param configClassHandler the class referring to T
 	 * @param builder YACL screen builder. Should be empty at first and will return buildable.
 	 * @return The builder after every field has been added to it.
 	 * @param <T> config class
 	 */
 	@SuppressWarnings("unused")
 	public static <T> YetAnotherConfigLib.Builder parse(
-			Class<T> configClass,
-			T defaults,
-			T config,
+			ConfigClassHandler<T> configClassHandler,
 			YetAnotherConfigLib.Builder builder
 	) {
-		return new AutoYacl<>(configClass, defaults, config).parse(builder);
+		return new AutoYacl<>(configClassHandler).parse(builder);
 	}
 
-	private final Class<T> configClass;
-	private final T defaults;
-	private final T config;
-	private final String modId;
+	private final ConfigClassHandler<T> configClassHandler;
+	public final String modId;
 	private @Nullable T dummyConfig = null;
+	public final Map<String, Option<?>> options = new LinkedHashMap<>();
 	private final Map<String, List<EnableIf>> dependencies = new LinkedHashMap<>();
 
 	/**
 	 * Instance this class to get a dynamic builder from which you may create individual options.
 	 *
-	 * @param configClass the class referring to T
-	 * @param defaults default config, to revert options to default from
-	 * @param config current config
+	 * @param configClassHandler the class referring to T
 	 */
-	public AutoYacl(Class<T> configClass, T defaults, T config) {
-		this.configClass = configClass;
-		this.defaults = defaults;
-		this.config = config;
-		AutoYaclConfig ayc = configClass.getAnnotation(AutoYaclConfig.class);
+	public AutoYacl(ConfigClassHandler<T> configClassHandler) {
+		this.configClassHandler = configClassHandler;
+		AutoYaclConfig ayc = configClassHandler.configClass().getAnnotation(AutoYaclConfig.class);
 		this.modId = ayc.modid();
+	}
+	public AutoYacl(ConfigClassHandler<T> configClassHandler, String modId) {
+		this.configClassHandler = configClassHandler;
+		this.modId = modId;
 	}
 
 	@SuppressWarnings("UnusedReturnValue")
@@ -390,7 +413,7 @@ public class AutoYacl <T> {
 		return this;
 	}
 
-	protected Option<?> findDependantOption(Map<String, Option<?>> options, String key, EnableIf enableIf) {
+	protected Option<?> findDependantOption(String key, EnableIf enableIf) {
 		if (key.lastIndexOf('.') != -1) {
 			Option<?> opt = options.get(key.substring(0, key.lastIndexOf('.') + 1) + enableIf.field());
 			if (opt != null) return opt;
@@ -411,13 +434,13 @@ public class AutoYacl <T> {
 	 * Resolve all @EnableIf dependencies and add the required listeners to toggle active status of options.
 	 * We do this outside of the category builders, so that options from other categories can be referenced.
 	 */
-	protected void computeDependencies(Map<String, Option<?>> options) {
+	protected void computeDependencies() {
 		dependencies.forEach((key, list) -> {
 			Option<?> dependingOption = options.get(key);
 
 			var captureList = list.stream()
 					.map(enableIf -> {
-						Option<?> depend = findDependantOption(options, key, enableIf);
+						Option<?> depend = findDependantOption(key, enableIf);
 						try {
 							return new Pair<>(depend, enableIf.value().getConstructor().newInstance());
 						} catch (ReflectiveOperationException e) {
@@ -448,14 +471,20 @@ public class AutoYacl <T> {
 	 * Parses all relevant annotations into a full YACL GUI and adds everything into the provided builder.
 	 */
 	public YetAnotherConfigLib.Builder parse(YetAnotherConfigLib.Builder builder) {
-		AutoYaclConfig ayc = configClass.getAnnotation(AutoYaclConfig.class);
-		Text modTitle = Text.translatable(ayc.translationKey().isBlank() ? modId + ".title" : ayc.translationKey());
+		String translationKey = modId + ".title";
+		if (configClassHandler.configClass().isAnnotationPresent(AutoYaclConfig.class)) {
+			AutoYaclConfig ayc = configClassHandler.configClass().getAnnotation(AutoYaclConfig.class);
+			if (!ayc.translationKey().isBlank()) {
+				translationKey = ayc.translationKey();
+			}
+		}
+		Text modTitle = Text.translatable(translationKey);
 
 		Map<String, CategoryWrapper> categories = new LinkedHashMap<>();
 		CategoryWrapper categoryMain = wrapBuilder("general");
 		categories.put("general", categoryMain);
 
-		for (Field field : configClass.getFields()) {
+		for (Field field : configClassHandler.configClass().getFields()) {
 			if (field.isAnnotationPresent(SerialEntry.class)) {
 				Category category = field.getAnnotation(Category.class);
 				if (category == null) {
@@ -470,12 +499,11 @@ public class AutoYacl <T> {
 		}
 
 		// Dependency resolution for @EnableIf annotations
-		Map<String, Option<?>> options = new LinkedHashMap<>();
 		for (var entry : categories.values()) {
 			options.putAll(entry.options);
 			builder.category(entry.build());
 		}
-		computeDependencies(options);
+		computeDependencies();
 
 		return builder.title(modTitle);
 	}
@@ -491,7 +519,7 @@ public class AutoYacl <T> {
 	@SuppressWarnings("unused")
 	public <S> Option.Builder<S> makeOption(String key) {
 		try {
-			return Wrapper.createOptionBuilder(modId, key, configClass.getField(key), defaults, config, dummyConfig, dependencies);
+			return Wrapper.createOptionBuilder(modId, key, configClassHandler.configClass().getField(key), configClassHandler.defaults(), configClassHandler.instance(), dummyConfig, dependencies, configClassHandler);
 		} catch (NoSuchFieldException e) {
 			throw new RuntimeException(e);
 		}

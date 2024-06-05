@@ -15,6 +15,7 @@ import net.minecraft.util.Colors;
 
 import java.awt.Color;
 import java.util.List;
+import java.util.Objects;
 
 @AutoYaclConfig(modid = "libbambootest", translationKey = "libbamboo")
 @SuppressWarnings("unused")
@@ -88,6 +89,38 @@ public class Config {
 	@Decorate(decorator = TestEnumDecorator.class)
 	public TestEnum decoratedEnum = TestEnum.MAGIC;
 
+	public static class SubscreenObject {
+		@SerialEntry
+		public int integer = 0;
+
+		@SerialEntry
+		@Decorate(decorator = TestEnumDecorator.class)
+		public TestEnum nestedEnum = TestEnum.MAGIC;
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			SubscreenObject that = (SubscreenObject) o;
+			return integer == that.integer && nestedEnum == that.nestedEnum;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(integer, nestedEnum);
+		}
+	}
+
+	@SerialEntry
+	@Nesting("subscreen")
+	public boolean enableNested = true;
+
+	@SerialEntry
+	@SubScreen
+	@Nested
+	public SubscreenObject subscreen = new SubscreenObject();
+
+
 	@SerialEntry
 	@Category(name = "item")
 	@DescriptionImage(ItemOrTagRenderer.OfItem.class)
@@ -130,4 +163,9 @@ public class Config {
 	@SerialEntry
 	@Category(name = "lists")
 	public List<Color> colorList = List.of(new Color(Colors.RED), new Color(Colors.BLACK));
+
+	@SerialEntry
+	@Category(name = "lists")
+	@Decorate(decorator = TestEnumDecorator.class)
+	public List<TestEnum> enumList = List.of(TestEnum.MAGIC, TestEnum.DIFFERENT);
 }
