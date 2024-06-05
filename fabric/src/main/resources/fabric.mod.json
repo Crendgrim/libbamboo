@@ -16,7 +16,8 @@
 
   "environment": "client",
   "mixins": [
-    "libbamboo-common.mixins.json"
+    "libbamboo-common.mixins.json",
+    "libbamboo-fabric.mixins.json"
   ],
 
   "entrypoints": {

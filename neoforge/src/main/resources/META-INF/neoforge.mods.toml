@@ -16,6 +16,9 @@ displayTest = "IGNORE_ALL_VERSION"
 [[mixins]]
 config = "libbamboo-common.mixins.json"
 
+[[mixins]]
+config = "libbamboo-neoforge.mixins.json"
+
 [[dependencies.libbamboo]]
 modId = "neoforge"
 mandatory = true

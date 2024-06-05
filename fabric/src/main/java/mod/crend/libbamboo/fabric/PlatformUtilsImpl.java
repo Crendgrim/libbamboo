@@ -5,12 +5,14 @@ import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -39,4 +41,13 @@ public class PlatformUtilsImpl {
 		return ClientTags.getOrCreateLocalTag(blockTagKey);
 	}
 
+	public static HashSet<Path> getResourcePaths(String path) {
+		HashSet<Path> out = new HashSet<>();
+
+		for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {
+			mod.findPath(path).ifPresent(out::add);
+		}
+
+		return out;
+	}
 }

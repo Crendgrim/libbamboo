@@ -7,6 +7,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -38,6 +39,11 @@ public class PlatformUtils {
 
 	@ExpectPlatform
 	public static Set<Identifier> getBlocksFromTag(TagKey<Block> blockTagKey) {
+		throw new AssertionError();
+	}
+
+	@ExpectPlatform
+	public static HashSet<Path> getResourcePaths(String path) {
 		throw new AssertionError();
 	}
 }

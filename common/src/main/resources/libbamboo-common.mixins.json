@@ -5,7 +5,6 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "ClientPlayerEntityMixin",
-    "ClientPlayerInteractionManagerMixin",
     "ClientPlayNetworkHandlerMixin",
     "HungerManagerMixin",
     "MinecraftClientMixin"

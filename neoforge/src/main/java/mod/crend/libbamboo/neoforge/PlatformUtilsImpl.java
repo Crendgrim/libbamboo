@@ -6,11 +6,18 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.fml.loading.LoadingModList;
+import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforgespi.language.IModFileInfo;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -43,5 +50,18 @@ public class PlatformUtilsImpl {
 			return ClientTags.getOrCreateLocalTag(blockTagKey);
 		}
 		return Set.of();
+	}
+
+	public static HashSet<Path> getResourcePaths(String path) {
+		HashSet<Path> out = new HashSet<>();
+
+		for (IModFileInfo mod : ModList.get().getModFiles()) {
+			Path resource = mod.getFile().findResource(path);
+			if (Files.exists(resource)) {
+				out.add(resource);
+			}
+		}
+
+		return out;
 	}
 }
