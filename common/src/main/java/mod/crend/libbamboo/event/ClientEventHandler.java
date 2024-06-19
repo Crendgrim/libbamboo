@@ -61,7 +61,7 @@ public class ClientEventHandler {
 			if (hitResult != null && !hitResult.equals(previousHitResult)) {
 				switch (hitResult.getType()) {
 					case MISS -> {
-						if (previousHitResult.getType() != HitResult.Type.MISS) {
+						if (previousHitResult == null || previousHitResult.getType() != HitResult.Type.MISS) {
 							TargetEvent.NO_TARGET_TRIGGER.invoker().trigger();
 						}
 						TargetEvent.NO_TARGET_TICK.invoker().trigger();
@@ -71,10 +71,10 @@ public class ClientEventHandler {
 							BlockPos blockPos = ((BlockHitResult) hitResult).getBlockPos();
 							BlockState blockState = player.clientWorld.getBlockState(blockPos);
 							if (TargetEvent.TARGETED_BLOCK_CHANGED.isRegistered()) {
-								if (previousHitResult.getType() != HitResult.Type.BLOCK) {
+								if (previousHitResult == null || previousHitResult.getType() != HitResult.Type.BLOCK) {
 									TargetEvent.TARGETED_BLOCK_CHANGED.invoker().target(blockPos, blockState);
 								} else {
-									BlockPos previousBlockPos = ((BlockHitResult) hitResult).getBlockPos();
+									BlockPos previousBlockPos = ((BlockHitResult) previousHitResult).getBlockPos();
 									BlockState previousBlockState = player.clientWorld.getBlockState(previousBlockPos);
 									if (!blockPos.equals(previousBlockPos) || !blockState.equals(previousBlockState)) {
 										TargetEvent.TARGETED_BLOCK_CHANGED.invoker().target(blockPos, blockState);
@@ -87,7 +87,8 @@ public class ClientEventHandler {
 					case ENTITY -> {
 						Entity entity = ((EntityHitResult) hitResult).getEntity();
 						if (TargetEvent.TARGETED_ENTITY_CHANGED.isRegistered()) {
-							if (previousHitResult.getType() != HitResult.Type.ENTITY
+							if (previousHitResult == null
+									|| previousHitResult.getType() != HitResult.Type.ENTITY
 									|| !entity.equals(((EntityHitResult) previousHitResult).getEntity())) {
 								TargetEvent.TARGETED_ENTITY_CHANGED.invoker().target(entity);
 							}
