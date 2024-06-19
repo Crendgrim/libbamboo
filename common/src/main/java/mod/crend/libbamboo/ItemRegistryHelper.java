@@ -18,12 +18,11 @@ public final class ItemRegistryHelper {
 	 * @return true if the identifier refers to a registered item, false otherwise
 	 */
 	public static boolean isRegisteredItem(String identifier) {
-		try {
-			Identifier itemIdentifier = new Identifier(identifier.toLowerCase());
+		Identifier itemIdentifier = Identifier.tryParse(identifier.toLowerCase());
+		if (itemIdentifier != null) {
 			return Registries.ITEM.containsId(itemIdentifier);
-		} catch (InvalidIdentifierException e) {
-			return false;
 		}
+		return false;
 	}
 
 	/**
@@ -34,14 +33,13 @@ public final class ItemRegistryHelper {
 	 * @return The item identified by the given string, or the fallback if the identifier is not known.
 	 */
 	public static Item getItemFromName(String identifier, Item defaultItem) {
-		try {
-			Identifier itemIdentifier = new Identifier(identifier.toLowerCase());
-			if (Registries.ITEM.containsId(itemIdentifier)) {
-				return Registries.ITEM.get(itemIdentifier);
-			}
-		} catch (InvalidIdentifierException ignored) { }
+		Identifier itemIdentifier = Identifier.tryParse(identifier.toLowerCase());
+		if (itemIdentifier != null && Registries.ITEM.containsId(itemIdentifier)) {
+			return Registries.ITEM.get(itemIdentifier);
+		}
 		return defaultItem;
 	}
+
 	/**
 	 * Looks up the item of the given identifier string.
 	 * @param identifier Item identifier, either of the format "namespace:path" or "path". If no namespace is included,

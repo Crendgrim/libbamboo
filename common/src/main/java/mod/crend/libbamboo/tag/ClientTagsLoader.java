@@ -30,6 +30,7 @@ import com.google.gson.JsonParser;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import mod.crend.libbamboo.PlatformUtils;
+import net.minecraft.registry.RegistryKeys;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,11 +40,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.TagEntry;
 import net.minecraft.registry.tag.TagFile;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.registry.tag.TagManagerLoader;
 import net.minecraft.util.Identifier;
-
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
 
 public class ClientTagsLoader {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dc-client-tags-api-v1");
@@ -112,7 +109,7 @@ public class ClientTagsLoader {
 	 * @return the paths to all tag json files within the available mods
 	 */
 	private static HashSet<Path> getTagFiles(RegistryKey<? extends Registry<?>> registryKey, Identifier identifier) {
-		return getTagFiles(TagManagerLoader.getPath(registryKey), identifier);
+		return getTagFiles(RegistryKeys.getTagPath(registryKey), identifier);
 	}
 
 	/**

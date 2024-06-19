@@ -15,7 +15,7 @@ public class IdentifierTypeAdapter implements JsonSerializer<Identifier>, JsonDe
 
 	@Override
 	public Identifier deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-		return new Identifier(json.getAsString());
+		return Identifier.tryParse(json.getAsString());
 	}
 
 	@Override

@@ -89,12 +89,12 @@ public class BlockOrTag {
 			namespace = value.substring(0, sep);
 			blockTag = value.substring(sep + 1);
 		}
-		try {
-			TagKey<Block> tagKey = TagKey.of(RegistryKeys.BLOCK, new Identifier(namespace, blockTag));
+		Identifier tagIdentifier = Identifier.tryParse(namespace, blockTag);
+		if (tagIdentifier != null) {
+			TagKey<Block> tagKey = TagKey.of(RegistryKeys.BLOCK, tagIdentifier);
 			return getBlockTags().contains(tagKey);
-		} catch (InvalidIdentifierException e) {
-			return false;
 		}
+		return false;
 	}
 
 	/**
@@ -164,7 +164,7 @@ public class BlockOrTag {
 	protected BlockOrTag(String identifier) {
 		if (identifier.startsWith("#")) {
 			String tagName = identifier.substring(1);
-			this.blockTag = TagKey.of(RegistryKeys.BLOCK, new Identifier(tagName));
+			this.blockTag = TagKey.of(RegistryKeys.BLOCK, Identifier.of(tagName));
 			this.isBlock = false;
 		} else {
 			this.block = BlockRegistryHelper.getBlockFromName(identifier);

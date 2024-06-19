@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[46,)"
+loaderVersion = "*"
 license = "LGPL-3.0"
 
 [[mods]]
@@ -14,15 +14,17 @@ logoFile = "icon.png"
 displayTest = "IGNORE_ALL_VERSION"
 
 [[dependencies.libbambootest]]
-modId = "forge"
+modId = "neoforge"
 mandatory = true
-versionRange = "[46,)"
+type = "required"
+versionRange = "[20.3,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.libbambootest]]
 modId = "minecraft"
 mandatory = true
+type = "required"
 versionRange = "[1.20,)"
 ordering = "NONE"
 side = "BOTH"
@@ -30,6 +32,7 @@ side = "BOTH"
 [[dependencies.libbambootest]]
 modId = "libbamboo"
 mandatory = true
+type = "required"
 versionRange = "[1,)"
 ordering = "NONE"
 side = "BOTH"
@@ -37,6 +40,7 @@ side = "BOTH"
 [[dependencies.libbambootest]]
 modId = "yet_another_config_lib"
 mandatory = false
+type = "optional"
 versionRange = "[3,)"
 ordering = "NONE"
 side = "BOTH"

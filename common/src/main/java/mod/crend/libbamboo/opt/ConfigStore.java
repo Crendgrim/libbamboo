@@ -144,7 +144,7 @@ public class ConfigStore<T> {
 			doSave = true;
 		}
 		if (LibBamboo.HAS_YACL) {
-			yaclWrapper = new WithYacl<>(configClass, new Identifier(modId, configClass.getSimpleName().toLowerCase()), path);
+			yaclWrapper = new WithYacl<>(configClass, Identifier.of(modId, configClass.getSimpleName().toLowerCase()), path);
 		} else {
 			try {
 				configInstance = getGsonBuilder().create().fromJson(Files.readString(path), configClass);

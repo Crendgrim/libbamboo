@@ -38,12 +38,11 @@ public class CustomFramebufferRenderer {
 		RenderSystem.setShaderTexture(0, framebuffer.getColorAttachment());
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		Matrix4f matrix4f = context.getMatrices().peek().getPositionMatrix();
-		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-		bufferBuilder.vertex(matrix4f, 0, 0, 0).texture(0, 1).next();
-		bufferBuilder.vertex(matrix4f, 0, height, 0).texture(0, 0).next();
-		bufferBuilder.vertex(matrix4f, width, height, 0).texture(1, 0).next();
-		bufferBuilder.vertex(matrix4f, width, 0, 0).texture(1, 1).next();
+		BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+		bufferBuilder.vertex(matrix4f, 0, 0, 0).texture(0, 1);
+		bufferBuilder.vertex(matrix4f, 0, height, 0).texture(0, 0);
+		bufferBuilder.vertex(matrix4f, width, height, 0).texture(1, 0);
+		bufferBuilder.vertex(matrix4f, width, 0, 0).texture(1, 1);
 		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 	}
 

@@ -18,23 +18,21 @@ public class BlockRegistryHelper {
 	 * @return true if the identifier refers to a registered block, false otherwise
 	 */
 	public static boolean isRegisteredBlock(String identifier) {
-		try {
-			Identifier blockIdentifier = new Identifier(identifier.toLowerCase());
+		Identifier blockIdentifier = Identifier.tryParse(identifier.toLowerCase());
+		if (blockIdentifier != null) {
 			return Registries.BLOCK.containsId(blockIdentifier);
-		} catch (InvalidIdentifierException var2) {
-			return false;
 		}
+		return false;
 	}
 
 	public static Block getBlockFromName(String identifier, Block defaultBlock) {
-		try {
-			Identifier blockIdentifier = new Identifier(identifier.toLowerCase());
-			if (Registries.BLOCK.containsId(blockIdentifier)) {
-				return Registries.BLOCK.get(blockIdentifier);
-			}
-		} catch (InvalidIdentifierException ignored) { }
+		Identifier blockIdentifier = Identifier.tryParse(identifier.toLowerCase());
+		if (blockIdentifier != null && Registries.BLOCK.containsId(blockIdentifier)) {
+			return Registries.BLOCK.get(blockIdentifier);
+		}
 		return defaultBlock;
 	}
+
 	/**
 	 * Looks up the block of the given identifier string.
 	 * @param identifier Block identifier, either of the format "namespace:path" or "path". If no namespace is included,

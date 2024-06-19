@@ -86,12 +86,12 @@ public class ItemOrTag {
 			namespace = value.substring(0, sep);
 			itemTag = value.substring(sep + 1);
 		}
-		try {
-			TagKey<Item> tagKey = TagKey.of(RegistryKeys.ITEM, new Identifier(namespace, itemTag));
+		Identifier tagIdentifier = Identifier.tryParse(namespace, itemTag);
+		if (tagIdentifier != null) {
+			TagKey<Item> tagKey = TagKey.of(RegistryKeys.ITEM, tagIdentifier);
 			return getItemTags().contains(tagKey);
-		} catch (InvalidIdentifierException e) {
-			return false;
 		}
+		return false;
 	}
 
 	/**
@@ -161,7 +161,7 @@ public class ItemOrTag {
 	protected ItemOrTag(String identifier) {
 		if (identifier.startsWith("#")) {
 			String tagName = identifier.substring(1);
-			this.itemTag = TagKey.of(RegistryKeys.ITEM, new Identifier(tagName));
+			this.itemTag = TagKey.of(RegistryKeys.ITEM, Identifier.of(tagName));
 			this.isItem = false;
 		} else {
 			this.item = ItemRegistryHelper.getItemFromName(identifier);
