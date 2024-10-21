@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "id": "libbamboo",
+  "id": "${id}",
   "version": "${version}",
 
-  "name": "libbamboo",
-  "description": "Library for my client-side mods",
+  "name": "${name}",
+  "description": "Library for Crendgrim's client-side mods",
   "authors": [
     "Crendgrim"
   ],
@@ -12,7 +12,7 @@
   },
 
   "license": "LGPL-3.0",
-  "icon": "assets/libbamboo/icon.png",
+  "icon": "assets/${id}/icon.png",
 
   "environment": "client",
   "mixins": [
@@ -25,9 +25,8 @@
   },
 
   "depends": {
-    "fabricloader": "*",
-    "minecraft": "${supported_version_pattern}",
-    "java": "*"
+    "fabricloader": ">=0.15",
+    "minecraft": "${minecraft}"
   },
   "suggests": {
     "yet_another_config_lib": "3.*"

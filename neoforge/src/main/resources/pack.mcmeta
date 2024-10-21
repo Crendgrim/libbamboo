@@ -1,6 +1,6 @@
 {
   "pack": {
-    "description": "YetAnotherConfigLibExtensions",
-    "pack_format": 9
+    "description": "${name}",
+    "pack_format": 15
   }
 }

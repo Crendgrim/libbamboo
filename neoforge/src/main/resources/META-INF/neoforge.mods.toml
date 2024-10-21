@@ -3,34 +3,16 @@ loaderVersion = "*"
 license = "LGPL-3.0"
 
 [[mods]]
-modId = "libbamboo"
-version = "1.13"
-displayName = "libbamboo"
-authors = "Crendgrim"
-description = '''
-Library for my client-side mods
-'''
-logoFile = "icon.png"
-displayTest = "IGNORE_ALL_VERSION"
+modId = "${id}"
+version = "${version}"
+displayName = "${name}"
+authors = "Me"
+description = "This is an example description! Tell everyone what your mod is about!"
+logoFile = "assets/${id}/icon.png"
+logoBlur = false
 
 [[mixins]]
-config = "libbamboo-common.mixins.json"
+config = "template-common.mixins.json"
 
 [[mixins]]
-config = "libbamboo-neoforge.mixins.json"
-
-[[dependencies.libbamboo]]
-modId = "neoforge"
-mandatory = true
-type = "required"
-versionRange = "[20.3,)"
-ordering = "NONE"
-side = "BOTH"
-
-[[dependencies.libbamboo]]
-modId = "minecraft"
-mandatory = true
-type = "required"
-versionRange = "[1.20,)"
-ordering = "NONE"
-side = "BOTH"
+config = "template-neoforge.mixins.json"

@@ -1,7 +1,7 @@
 package mod.crend.libbamboo.neoforge;
 
 import mod.crend.libbamboo.LibBamboo;
-import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
+//import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.registry.tag.TagKey;
@@ -36,7 +36,7 @@ public class PlatformUtilsImpl {
 
 	public static Set<Identifier> getItemsFromTag(TagKey<Item> itemTagKey) {
 		if (ModList.get().isLoaded("fabric_api")) {
-			return ClientTags.getOrCreateLocalTag(itemTagKey);
+//			return ClientTags.getOrCreateLocalTag(itemTagKey);
 		}
 		return Set.of();
 	}
@@ -47,7 +47,7 @@ public class PlatformUtilsImpl {
 
 	public static Set<Identifier> getBlocksFromTag(TagKey<Block> blockTagKey) {
 		if (ModList.get().isLoaded("fabric_api")) {
-			return ClientTags.getOrCreateLocalTag(blockTagKey);
+//			return ClientTags.getOrCreateLocalTag(blockTagKey);
 		}
 		return Set.of();
 	}

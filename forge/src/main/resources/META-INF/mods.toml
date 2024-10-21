@@ -3,26 +3,16 @@ loaderVersion = "*"
 license = "LGPL-3.0"
 
 [[mods]]
-modId = "libbamboo"
-version = "1.12"
-displayName = "LibBamboo"
+modId = "${id}"
+version = "${version}"
+displayName = "${name}"
 authors = "Crendgrim"
-description = '''
-Crendgrim's utility library
-'''
-logoFile = "icon.png"
-displayTest = "IGNORE_ALL_VERSION"
+description = "Library for Crendgrim's client-side mods"
+logoFile = "assets/${id}/icon.png"
+logoBlur = false
 
-[[dependencies.libbamboo]]
-modId = "forge"
-mandatory = true
-versionRange = "[46,)"
-ordering = "NONE"
-side = "BOTH"
+[[mixins]]
+config = "libbamboo-common.mixins.json"
 
-[[dependencies.libbamboo]]
-modId = "minecraft"
-mandatory = true
-versionRange = "[1.20,)"
-ordering = "NONE"
-side = "BOTH"
+[[mixins]]
+config = "libbamboo-forge.mixins.json"
