@@ -320,10 +320,7 @@ public class AutoYacl <T> {
 						nested,
 						configClassHandler
 				);
-				for (Field memberField : field.getType().getFields()) {
-					groupWrapper.register(key + "." + memberField.getName(), memberField);
-				}
-
+				registerMemberFields(groupWrapper, key, field);
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			}
