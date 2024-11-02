@@ -8,6 +8,7 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
@@ -59,7 +60,10 @@ public class ItemOrTag {
 	 * @return A list of all known item tags
 	 */
 	public static List<TagKey<Item>> getItemTags() {
-		List<TagKey<Item>> currentlyLoadedTags = Registries.ITEM.streamTags().toList();
+		List<TagKey<Item>> currentlyLoadedTags = Registries.ITEM.streamTags()
+				//? if >=1.21.2
+				/*.map(RegistryEntryList.Named::getTag)*/
+				.toList();
 		if (currentlyLoadedTags.isEmpty()) {
 			// No elements in the stream; use the default tags as read by reflection
 			return BUILTIN_ITEM_TAGS;
@@ -198,10 +202,17 @@ public class ItemOrTag {
 	 */
 	public Item getAnyItem() {
 		if (isItem) return item;
+		//? if <1.21.2 {
 		var tagEntries = Registries.ITEM.getEntryList(itemTag);
 		if (tagEntries.isPresent() && tagEntries.get().size() > 0) {
 			return tagEntries.get().get(0).value();
 		}
+		//?} else {
+		/*var tagEntries = Registries.ITEM.iterateEntries(itemTag);
+		if (tagEntries.iterator().hasNext()) {
+			return tagEntries.iterator().next().value();
+		}
+		*///?}
 		return PlatformUtils.getItemsFromTag(itemTag)
 				.stream()
 				.findFirst()
@@ -211,6 +222,7 @@ public class ItemOrTag {
 
 	public Collection<Item> getAllItems() {
 		if (isItem) return List.of(item);
+		//? if <1.21.2 {
 		return Registries.ITEM.getEntryList(itemTag)
 				// Extract list of identifiers from loaded tag registry, if present
 				.map(registryEntries -> registryEntries.stream().map(RegistryEntry::value).toList())
@@ -219,6 +231,19 @@ public class ItemOrTag {
 				.stream()
 				.map(Registries.ITEM::get)
 				.toList());
+		//?} else {
+		/*List<Item> items = new ArrayList<>();
+		for (var iterator : Registries.ITEM.iterateEntries(itemTag)) {
+			items.add(iterator.value());
+		}
+		if (items.isEmpty()) {
+			return PlatformUtils.getItemsFromTag(itemTag)
+					.stream()
+					.map(Registries.ITEM::get)
+					.toList();
+		}
+		return items;
+		*///?}
 	}
 
 	/**

@@ -16,10 +16,6 @@ architectury.common(stonecutter.tree.branches.mapNotNull {
     else it.prop("loom.platform")
 })
 
-repositories {
-    maven("https://maven.isxander.dev/releases")
-}
-
 dependencies {
     minecraft("com.mojang:minecraft:$minecraft")
     mappings("net.fabricmc:yarn:$minecraft+build.${mod.dep("yarn_build")}:v2")

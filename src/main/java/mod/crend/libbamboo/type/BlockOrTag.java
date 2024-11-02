@@ -5,9 +5,11 @@ import mod.crend.libbamboo.PlatformUtils;
 import mod.crend.libbamboo.VersionUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
@@ -62,7 +64,10 @@ public class BlockOrTag {
 	 * @return A list of all known block tags
 	 */
 	public static List<TagKey<Block>> getBlockTags() {
-		List<TagKey<Block>> currentlyLoadedTags = Registries.BLOCK.streamTags().toList();
+		List<TagKey<Block>> currentlyLoadedTags = Registries.BLOCK.streamTags()
+				//? if >=1.21.2
+				/*.map(RegistryEntryList.Named::getTag)*/
+				.toList();
 		if (currentlyLoadedTags.isEmpty()) {
 			// No elements in the stream; use the default tags as read by reflection
 			return BUILTIN_BLOCK_TAGS;
@@ -201,10 +206,17 @@ public class BlockOrTag {
 	 */
 	public Block getAnyBlock() {
 		if (isBlock) return block;
+		//? if <1.21.2 {
 		var tagEntries = Registries.BLOCK.getEntryList(blockTag);
 		if (tagEntries.isPresent() && tagEntries.get().size() > 0) {
 			return tagEntries.get().get(0).value();
 		}
+		//?} else {
+		/*var tagEntries = Registries.BLOCK.iterateEntries(blockTag);
+		if (tagEntries.iterator().hasNext()) {
+			return tagEntries.iterator().next().value();
+		}
+		*///?}
 		return PlatformUtils.getBlocksFromTag(blockTag)
 				.stream()
 				.findFirst()
@@ -214,6 +226,7 @@ public class BlockOrTag {
 
 	public Collection<Block> getAllBlocks() {
 		if (isBlock) return List.of(block);
+		//? if <1.21.2 {
 		return Registries.BLOCK.getEntryList(blockTag)
 				// Extract list of identifiers from loaded tag registry, if present
 				.map(registryEntries -> registryEntries.stream().map(RegistryEntry::value).toList())
@@ -222,6 +235,19 @@ public class BlockOrTag {
 				.stream()
 				.map(Registries.BLOCK::get)
 				.toList());
+		//?} else {
+		/*List<Block> blocks = new ArrayList<>();
+		for (var iterator : Registries.BLOCK.iterateEntries(blockTag)) {
+			blocks.add(iterator.value());
+		}
+		if (blocks.isEmpty()) {
+			return PlatformUtils.getBlocksFromTag(blockTag)
+					.stream()
+					.map(Registries.BLOCK::get)
+					.toList();
+		}
+		return blocks;
+		*///?}
 	}
 
 	/**

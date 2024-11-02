@@ -39,7 +39,6 @@ configurations {
 }
 
 repositories {
-    maven("https://maven.isxander.dev/releases")
     maven("https://maven.terraformersmc.com/")
 }
 
@@ -50,15 +49,18 @@ dependencies {
     mappings("net.fabricmc:yarn:$minecraft+build.${common.mod.dep("yarn_build")}:v2")
     modImplementation("net.fabricmc:fabric-loader:${mod.dep("fabric_loader")}")
 
-    modImplementation(fabricApi.module("fabric-api-base", common.mod.dep("fabric_api")))
-
-    if (stonecutter.eval(mcVersion, "<1.20.6")) {
-        modImplementation(fabricApi.module("fabric-convention-tags-v1", common.mod.dep("fabric_api")))
-    } else {
-        modImplementation(fabricApi.module("fabric-convention-tags-v2", common.mod.dep("fabric_api")))
+    listOf(
+        "fabric-api-base",
+        if (stonecutter.eval(mcVersion, "<1.20.6")) {
+            "fabric-convention-tags-v1"
+        } else {
+            "fabric-convention-tags-v2"
+        },
+        "fabric-client-tags-api-v1",
+        "fabric-lifecycle-events-v1"
+    ).forEach {
+        modImplementation(fabricApi.module(it, common.mod.dep("fabric_api")))
     }
-    modImplementation(fabricApi.module("fabric-client-tags-api-v1", common.mod.dep("fabric_api")))
-    modImplementation(fabricApi.module("fabric-lifecycle-events-v1", common.mod.dep("fabric_api")))
 
     modImplementation("dev.isxander:yet-another-config-lib:${common.mod.dep("yacl")}-fabric")
     modImplementation("com.terraformersmc:modmenu:${common.mod.dep("modmenu")}")

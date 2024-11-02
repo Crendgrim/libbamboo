@@ -109,7 +109,7 @@ public class ClientEventHandler {
 				wasSneaking = false;
 			}
 
-			if (player.isFallFlying()) {
+			if (player./*? if <1.21.2 {*/isFallFlying/*?} else {*//*isGliding*//*?}*/()) {
 				if (!wasFlying) {
 					FlyEvent.START.invoker().onStartFlying(player);
 				}

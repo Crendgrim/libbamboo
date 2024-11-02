@@ -45,7 +45,6 @@ repositories {
         name = "Kotlin for Forge"
         setUrl("https://thedarkcolour.github.io/KotlinForForge/")
     }
-    maven("https://maven.isxander.dev/releases")
 }
 
 dependencies {
@@ -57,12 +56,6 @@ dependencies {
         }
     })
     "neoForge"("net.neoforged:neoforge:${common.mod.dep("neoforge_loader")}")
-    /*
-    "io.github.llamalad7:mixinextras-neoforge:${mod.dep("mixin_extras")}".let {
-        implementation(it)
-        include(it)
-    }
-     */
 
     modImplementation("dev.isxander:yet-another-config-lib:${common.mod.dep("yacl")}-neoforge")
 

@@ -34,3 +34,9 @@ for (it in stonecutter.tree.nodes) {
         dependsOn("run$type")
     }
 }
+
+allprojects {
+    repositories {
+        maven("https://maven.isxander.dev/releases")
+    }
+}

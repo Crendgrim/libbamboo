@@ -45,7 +45,7 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
     @WrapOperation(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;getVehicle()Lnet/minecraft/entity/Entity;"))
     private Entity jumpBarChanged(ClientPlayerEntity instance, Operation<Entity> original) {
         Entity vehicle = original.call(instance);
-        if (this.input.jumping) {
+        if (this.input./*? if <1.21.2 {*/jumping/*?} else {*//*playerInput.jump()*//*?}*/) {
             MountEvent.MOUNT_JUMP.invoker().onJump(vehicle);
         }
         return vehicle;

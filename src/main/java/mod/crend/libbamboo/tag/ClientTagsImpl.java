@@ -50,7 +50,7 @@ public class ClientTagsImpl {
 
 		if (maybeRegistry.isPresent()) {
 			// Check the synced tag exists and use that
-			if (maybeRegistry.get().getEntryList(tagKey).isPresent()) {
+			if (maybeRegistry.get()./*? if <1.21.2 {*/getEntryList/*?} else {*//*getOptional*//*?}*/(tagKey).isPresent()) {
 				// Difference to fabric-client-tags-api: fallthrough if not in registry, check local tags too
 				if (registryEntry.isIn(tagKey)) {
 					return true;
@@ -90,13 +90,17 @@ public class ClientTagsImpl {
 			if (MinecraftClient.getInstance().world != null) {
 				if (MinecraftClient.getInstance().world.getRegistryManager() != null) {
 					Optional<? extends Registry<T>> maybeRegistry = MinecraftClient.getInstance().world
-							.getRegistryManager().getOptional(tagKey.registry());
+							.getRegistryManager().getOptional(tagKey./*? if <1.21.2 {*/registry/*?} else {*//*registryRef*//*?}*/());
 					if (maybeRegistry.isPresent()) return maybeRegistry;
 				}
 			}
 		}
 
+		//? if <1.21.2 {
 		return (Optional<? extends Registry<T>>) Registries.REGISTRIES.getOrEmpty(tagKey.registry().getValue());
+		//?} else {
+		/*return (Optional<? extends Registry<T>>) Registries.REGISTRIES.getOptionalValue(tagKey.registryRef().getValue());
+		*///?}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -111,7 +115,7 @@ public class ClientTagsImpl {
 
 		Optional<RegistryKey<T>> maybeKey = registry.getKey(entry);
 
-		return maybeKey.map(registry::entryOf);
+		return maybeKey.map(registry::/*? if <1.21.2 {*/entryOf/*?} else {*//*getOrThrow*//*?}*/);
 	}
 
 	public static ClientTagsLoader.LoadedTag getOrCreatePartiallySyncedTag(TagKey<?> tagKey) {

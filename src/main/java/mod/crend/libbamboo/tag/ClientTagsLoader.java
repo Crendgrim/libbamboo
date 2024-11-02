@@ -53,7 +53,7 @@ public class ClientTagsLoader {
 	 */
 	public static LoadedTag loadTag(TagKey<?> tagKey) {
 		var tags = new HashSet<TagEntry>();
-		HashSet<Path> tagFiles = getTagFiles(tagKey.registry(), tagKey.id());
+		HashSet<Path> tagFiles = getTagFiles(tagKey./*? if <1.21.2 {*/registry/*?} else {*//*registryRef*//*?}*/(), tagKey.id());
 
 		for (Path tagPath : tagFiles) {
 			try (BufferedReader tagReader = Files.newBufferedReader(tagPath)) {
@@ -81,7 +81,7 @@ public class ClientTagsLoader {
 			tagEntry.resolve(new TagEntry.ValueGetter<>() {
 				@Nullable
 				@Override
-				public Identifier direct(Identifier id) {
+				public Identifier direct(Identifier id/*? if >=1.21.2 {*//*, boolean required*//*?}*/) {
 					immediateChildIds.add(id);
 					return id;
 				}
@@ -89,7 +89,7 @@ public class ClientTagsLoader {
 				@Nullable
 				@Override
 				public Collection<Identifier> tag(Identifier id) {
-					TagKey<?> tag = TagKey.of(tagKey.registry(), id);
+					TagKey<?> tag = TagKey.of(tagKey./*? if <1.21.2 {*/registry/*?} else {*//*registryRef*//*?}*/(), id);
 					immediateChildTags.add(tag);
 					return ClientTagsImpl.getOrCreatePartiallySyncedTag(tag).completeIds;
 				}

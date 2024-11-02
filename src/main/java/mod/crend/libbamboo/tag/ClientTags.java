@@ -97,7 +97,7 @@ public final class ClientTags {
 		Objects.requireNonNull(tagKey);
 		Objects.requireNonNull(registryKey);
 
-		if (tagKey.registry().getValue().equals(registryKey.getRegistry())) {
+		if (tagKey./*? if <1.21.2 {*/registry/*?} else {*//*registryRef*//*?}*/().getValue().equals(registryKey.getRegistry())) {
 			// Check local tags
 			Set<Identifier> ids = getOrCreateLocalTag(tagKey);
 			return ids.contains(registryKey.getValue());
