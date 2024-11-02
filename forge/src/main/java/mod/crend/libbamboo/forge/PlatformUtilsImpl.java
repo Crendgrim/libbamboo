@@ -9,6 +9,7 @@ import net.minecraft.util.Identifier;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.LoadingModList;
 import net.minecraftforge.forgespi.language.IModFileInfo;
 
 import java.nio.file.Files;
@@ -20,6 +21,14 @@ import java.util.Set;
 public class PlatformUtilsImpl {
 	public static boolean isYaclLoaded() {
 		return ModList.get().isLoaded(LibBamboo.YACL_MOD_ID);
+	}
+
+	public static boolean isModLoaded(String modId) {
+		return ModList.get().isLoaded(modId);
+	}
+
+	public static boolean isModPresent(String modId) {
+		return LoadingModList.get().getModFileById(modId) != null;
 	}
 
 	public static Path resolveConfigFile(String configName) {

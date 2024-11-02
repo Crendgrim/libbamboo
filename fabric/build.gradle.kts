@@ -1,6 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-
 plugins {
     id("dev.architectury.loom")
     id("architectury-plugin")
@@ -53,7 +52,7 @@ dependencies {
 
     modImplementation(fabricApi.module("fabric-api-base", common.mod.dep("fabric_api")))
 
-    if (stonecutter.eval(mcVersion, "<1.21")) {
+    if (stonecutter.eval(mcVersion, "<1.20.6")) {
         modImplementation(fabricApi.module("fabric-convention-tags-v1", common.mod.dep("fabric_api")))
     } else {
         modImplementation(fabricApi.module("fabric-convention-tags-v2", common.mod.dep("fabric_api")))

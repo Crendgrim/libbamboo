@@ -2,7 +2,7 @@ package mod.crend.libbamboo.fabric;
 
 import mod.crend.libbamboo.LibBamboo;
 import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
-//? if <1.21 {
+//? if <1.20.6 {
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 //?} else {
@@ -28,6 +28,14 @@ public class PlatformUtilsImpl {
 
 	public static Path resolveConfigFile(String configName) {
 		return FabricLoader.getInstance().getConfigDir().resolve(configName);
+	}
+
+	public static boolean isModLoaded(String modId) {
+		return FabricLoader.getInstance().isModLoaded(modId);
+	}
+
+	public static boolean isModPresent(String modId) {
+		return isModLoaded(modId);
 	}
 
 	public static Class<?> getModdedItemTagsClass() {

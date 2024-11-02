@@ -41,6 +41,11 @@ configurations {
 repositories {
     maven("https://maven.neoforged.net/releases/")
     maven("https://maven.su5ed.dev/releases") // Forgified Fabric API
+    maven {
+        name = "Kotlin for Forge"
+        setUrl("https://thedarkcolour.github.io/KotlinForForge/")
+    }
+    maven("https://maven.isxander.dev/releases")
 }
 
 dependencies {
@@ -52,10 +57,14 @@ dependencies {
         }
     })
     "neoForge"("net.neoforged:neoforge:${common.mod.dep("neoforge_loader")}")
+    /*
     "io.github.llamalad7:mixinextras-neoforge:${mod.dep("mixin_extras")}".let {
         implementation(it)
         include(it)
     }
+     */
+
+    modImplementation("dev.isxander:yet-another-config-lib:${common.mod.dep("yacl")}-neoforge")
 
     if (common.mod.dep("forgified_fabric_api") != "[UNSUPPORTED]") {
         modImplementation("org.sinytra.forgified-fabric-api:forgified-fabric-api:${common.mod.dep("forgified_fabric_api")}")

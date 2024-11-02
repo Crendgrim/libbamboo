@@ -12,7 +12,7 @@ logoFile = "assets/${id}/icon.png"
 logoBlur = false
 
 [[mixins]]
-config = "template-common.mixins.json"
+config = "libbamboo-common.mixins.json"
 
 [[mixins]]
-config = "template-neoforge.mixins.json"
+config = "libbamboo-neoforge.mixins.json"
