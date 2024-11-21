@@ -1,6 +1,7 @@
 package mod.crend.libbamboo.fabric;
 
 import mod.crend.libbamboo.LibBamboo;
+import mod.crend.libbamboo.PlatformUtils;
 import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
 //? if <1.20.6 {
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
@@ -22,6 +23,10 @@ import java.util.Set;
 
 @SuppressWarnings("unused")
 public class PlatformUtilsImpl {
+	public static PlatformUtils.Platform getCurrentPlatform() {
+		return PlatformUtils.Platform.FABRIC;
+	}
+
 	public static boolean isYaclLoaded() {
 		return FabricLoader.getInstance().isModLoaded(LibBamboo.YACL_MOD_ID);
 	}

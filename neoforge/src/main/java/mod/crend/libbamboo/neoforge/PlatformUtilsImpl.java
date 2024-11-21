@@ -1,18 +1,16 @@
 package mod.crend.libbamboo.neoforge;
 
 import mod.crend.libbamboo.LibBamboo;
-//import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
+import mod.crend.libbamboo.PlatformUtils;
+//? if forgified_fabric_api_neoforge
+/*import net.fabricmc.fabric.api.tag.client.v1.ClientTags;*/
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.fml.loading.LoadingModList;
-import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 
 import java.nio.file.Files;
@@ -22,6 +20,10 @@ import java.util.Set;
 
 @SuppressWarnings("unused")
 public class PlatformUtilsImpl {
+	public static PlatformUtils.Platform getCurrentPlatform() {
+		return PlatformUtils.Platform.NEOFORGE;
+	}
+
 	public static boolean isYaclLoaded() {
 		return ModList.get().isLoaded(LibBamboo.YACL_MOD_ID);
 	}
@@ -36,7 +38,8 @@ public class PlatformUtilsImpl {
 
 	public static Set<Identifier> getItemsFromTag(TagKey<Item> itemTagKey) {
 		if (ModList.get().isLoaded("fabric_api")) {
-//			return ClientTags.getOrCreateLocalTag(itemTagKey);
+			//? if forgified_fabric_api_neoforge
+			/*return ClientTags.getOrCreateLocalTag(itemTagKey);*/
 		}
 		return Set.of();
 	}
@@ -47,7 +50,8 @@ public class PlatformUtilsImpl {
 
 	public static Set<Identifier> getBlocksFromTag(TagKey<Block> blockTagKey) {
 		if (ModList.get().isLoaded("fabric_api")) {
-//			return ClientTags.getOrCreateLocalTag(blockTagKey);
+			//? if forgified_fabric_api_neoforge
+			/*return ClientTags.getOrCreateLocalTag(blockTagKey);*/
 		}
 		return Set.of();
 	}

@@ -4,6 +4,7 @@ plugins {
     id("dev.architectury.loom")
     id("architectury-plugin")
     id("com.github.johnrengelman.shadow")
+    id("maven-publish")
 }
 
 val loader = prop("loom.platform")!!
@@ -62,8 +63,8 @@ dependencies {
         modImplementation(fabricApi.module(it, common.mod.dep("fabric_api")))
     }
 
-    modImplementation("dev.isxander:yet-another-config-lib:${common.mod.dep("yacl")}-fabric")
-    modImplementation("com.terraformersmc:modmenu:${common.mod.dep("modmenu")}")
+    modCompileOnly("dev.isxander:yet-another-config-lib:${common.mod.dep("yacl")}-fabric")
+    modCompileOnly("com.terraformersmc:modmenu:${common.mod.dep("modmenu")}")
 
     commonBundle(project(common.path, "namedElements")) { isTransitive = false }
     shadowBundle(project(common.path, "transformProductionFabric")) { isTransitive = false }
@@ -127,4 +128,16 @@ tasks.register<Copy>("buildAndCollect") {
     from(tasks.remapJar.get().archiveFile, tasks.remapSourcesJar.get().archiveFile)
     into(rootProject.layout.buildDirectory.file("libs/${mod.version}/$loader"))
     dependsOn("build")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = mod.prop("group")
+            artifactId = mod.prop("id")
+            version = "${mod.version}+${minecraft}-${loader}"
+
+            from(components["java"])
+        }
+    }
 }

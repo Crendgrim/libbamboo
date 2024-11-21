@@ -9,13 +9,22 @@ import net.minecraft.client.MinecraftClient;
 *///?}
 import net.minecraft.client.gui.screen.Screen;
 import net.neoforged.fml.ModLoadingContext;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+//? if <1.20.5 {
+import net.neoforged.neoforge.client.ConfigScreenHandler;
+//?} else
+/*import net.neoforged.neoforge.client.gui.IConfigScreenFactory;*/
 
 public class ConfigScreen {
 	public static <T> void register(ConfigStore<T> configStore) {
 		if (LibBamboo.HAS_YACL) {
-			ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class,
-					() -> (context, parentScreen) -> makeScreen(context, parentScreen, configStore)
+			ModLoadingContext.get().registerExtensionPoint(
+					//? if <1.20.5 {
+					ConfigScreenHandler.ConfigScreenFactory.class,
+					//?} else
+					/*IConfigScreenFactory.class,*/
+					() ->/*? if <1.20.5 {*/new ConfigScreenHandler.ConfigScreenFactory/*?}*/(
+							(client, parentScreen) -> makeScreen(client, parentScreen, configStore)
+					)
 			);
 		}
 	}

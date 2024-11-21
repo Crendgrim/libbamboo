@@ -12,6 +12,16 @@ import java.util.Set;
 
 @SuppressWarnings("unused")
 public class PlatformUtils {
+	public enum Platform {
+		FABRIC,
+		FORGE,
+		NEOFORGE
+	}
+
+	@ExpectPlatform
+	public static Platform getCurrentPlatform() {
+		throw new AssertionError();
+	}
 
 	@ExpectPlatform
 	public static boolean isYaclLoaded() {

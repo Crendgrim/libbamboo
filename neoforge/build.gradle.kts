@@ -4,6 +4,7 @@ plugins {
     id("dev.architectury.loom")
     id("architectury-plugin")
     id("com.github.johnrengelman.shadow")
+    id("maven-publish")
 }
 
 val loader = prop("loom.platform")!!
@@ -59,8 +60,8 @@ dependencies {
 
     modImplementation("dev.isxander:yet-another-config-lib:${common.mod.dep("yacl")}-neoforge")
 
-    if (common.mod.dep("forgified_fabric_api") != "[UNSUPPORTED]") {
-        modImplementation("org.sinytra.forgified-fabric-api:forgified-fabric-api:${common.mod.dep("forgified_fabric_api")}")
+    if (!common.mod.dep("forgified_fabric_api_neoforge").startsWith("[")) {
+        modCompileOnly("org.sinytra.forgified-fabric-api:forgified-fabric-api:${common.mod.dep("forgified_fabric_api_neoforge")}")
     }
 
     commonBundle(project(common.path, "namedElements")) { isTransitive = false }
@@ -126,4 +127,16 @@ tasks.register<Copy>("buildAndCollect") {
     from(tasks.remapJar.get().archiveFile, tasks.remapSourcesJar.get().archiveFile)
     into(rootProject.layout.buildDirectory.file("libs/${mod.version}/$loader"))
     dependsOn("build")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = mod.prop("group")
+            artifactId = mod.prop("id")
+            version = "${mod.version}+${minecraft}-${loader}"
+
+            from(components["java"])
+        }
+    }
 }
