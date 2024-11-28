@@ -10,6 +10,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 
@@ -26,6 +27,14 @@ public class PlatformUtilsImpl {
 
 	public static boolean isYaclLoaded() {
 		return ModList.get().isLoaded(LibBamboo.YACL_MOD_ID);
+	}
+
+	public static boolean isModLoaded(String modId) {
+		return ModList.get().isLoaded(modId);
+	}
+
+	public static boolean isModPresent(String modId) {
+		return LoadingModList.get().getModFileById(modId) != null;
 	}
 
 	public static Path resolveConfigFile(String configName) {
