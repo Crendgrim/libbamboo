@@ -16,7 +16,7 @@ val common: Project = requireNotNull(stonecutter.node.sibling("")) {
 version = "${mod.version}+$minecraft"
 group = "${mod.group}.$loader"
 base {
-    archivesName.set("${mod.id}-$loader")
+    archivesName.set(mod.id)
 }
 architectury {
     platformSetupLoomIde()
@@ -95,7 +95,7 @@ tasks.jar {
 tasks.remapJar {
     injectAccessWidener = true
     input = tasks.shadowJar.get().archiveFile
-    archiveClassifier = null
+    archiveClassifier = loader
     dependsOn(tasks.shadowJar)
 }
 
@@ -134,7 +134,10 @@ publishing {
             artifactId = mod.prop("id")
             version = "${mod.version}+${minecraft}-${loader}"
 
-            from(components["java"])
+            artifact(tasks.remapJar.get().archiveFile)
+            artifact(tasks.remapSourcesJar.get().archiveFile) {
+                classifier = "sources"
+            }
         }
     }
 }
