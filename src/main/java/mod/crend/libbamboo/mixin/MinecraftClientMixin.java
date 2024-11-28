@@ -19,17 +19,11 @@ public class MinecraftClientMixin {
 		CustomFramebufferRenderer.resizeFramebuffer();
 	}
 
-	@Shadow
-	public ClientPlayerEntity player;
-
-	@Shadow
-	public HitResult crosshairTarget;
-
 	@Inject(
 			method = "doAttack",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/util/hit/HitResult;getType()Lnet/minecraft/util/hit/HitResult$Type;", shift = At.Shift.BEFORE)
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/util/hit/HitResult;getType()Lnet/minecraft/util/hit/HitResult$Type;")
 	)
 	private void doAttack(CallbackInfoReturnable<Boolean> cir) {
-		InteractionEvent.ATTACK.invoker().onAttack(player, crosshairTarget);
+		InteractionEvent.ATTACK.invoker().onAttack(MinecraftClient.getInstance().player, MinecraftClient.getInstance().crosshairTarget);
 	}
 }

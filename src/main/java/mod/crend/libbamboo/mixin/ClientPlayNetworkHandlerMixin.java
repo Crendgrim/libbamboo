@@ -19,9 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class ClientPlayNetworkHandlerMixin /*? if >=1.20.4 {*//*extends ClientCommonNetworkHandler*//*?}*/ {
-//? if <1.20.4 {
-    @Shadow @Final private MinecraftClient client;
-//?} else {
+//? if >=1.20.4 {
   /*public ClientPlayNetworkHandlerMixin(MinecraftClient client, ClientConnection clientConnection, ClientConnectionState clientConnectionState) {
         super(client, clientConnection, clientConnectionState);
     }
@@ -29,6 +27,6 @@ public abstract class ClientPlayNetworkHandlerMixin /*? if >=1.20.4 {*//*extends
 
     @Inject(method="onPlayerRespawn", at=@At("TAIL"))
     private void onPlayerRespawn(PlayerRespawnS2CPacket packet, CallbackInfo ci) {
-        GameEvent.PLAYER_RESPAWN.invoker().onRespawn(this.client.player);
+        GameEvent.PLAYER_RESPAWN.invoker().onRespawn(MinecraftClient.getInstance().player);
     }
 }
