@@ -8,7 +8,7 @@ version = "${version}"
 displayName = "${name}"
 authors = "Crendgrim"
 description = "Library for Crendgrim's client-side mods"
-logoFile = "assets/${id}/icon.png"
+logoFile = "${id}.png"
 logoBlur = false
 
 [[mixins]]
