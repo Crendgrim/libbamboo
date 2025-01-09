@@ -70,7 +70,8 @@ loom {
 
     forge.convertAccessWideners = true
     forge.mixinConfigs(
-        "libbamboo-common.mixins.json"
+        "libbamboo-common.mixins.json",
+        "libbamboo-forge.mixins.json"
     )
 
     runConfigs.all {
