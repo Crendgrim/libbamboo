@@ -28,6 +28,7 @@ public class ClientEventHandler {
 		float previousVehicleHealth = 0;
 		float previousArmor = 0;
 		float previousAir = 0;
+		float previousFood = 0;
 		boolean wasInPauseScreen = false;
 		boolean screenWasOpen = false;
 		boolean wasSneaking = false;
@@ -152,6 +153,10 @@ public class ClientEventHandler {
 			if (player.getArmor() != previousArmor) {
 				StatusEvent.ARMOR.invoker().onChange(player.getArmor(), previousArmor, 30);
 				previousArmor = player.getArmor();
+			}
+			if (player.getHungerManager().getFoodLevel() != previousFood) {
+				StatusEvent.FOOD.invoker().onChange(player.getHungerManager().getFoodLevel(), previousFood, 20);
+				previousFood = player.getHungerManager().getFoodLevel();
 			}
 
 			if (player.getVehicle() instanceof LivingEntity vehicle) {
