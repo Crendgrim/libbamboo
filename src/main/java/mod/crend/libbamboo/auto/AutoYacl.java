@@ -335,11 +335,11 @@ public class AutoYacl <T> {
 				toggles.getRight().setNestedOption(options.get(toggles.getLeft()));
 			}
 			ConfigCategory.Builder categoryBuilder = (ConfigCategory.Builder) builder;
-			for (var list : listOptions) {
-				categoryBuilder.group(list);
-			}
 			for (var group : groups.values()) {
 				categoryBuilder.group(group.build());
+			}
+			for (var list : listOptions) {
+				categoryBuilder.group(list);
 			}
 			return categoryBuilder.build();
 		}
