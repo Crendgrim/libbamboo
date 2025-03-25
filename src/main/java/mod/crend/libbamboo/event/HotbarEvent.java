@@ -8,7 +8,12 @@ public interface HotbarEvent {
 	ClientEvent<SelectedSlot> SELECTED_SLOT_CHANGE = ClientEventFactory.createArrayBacked();
 
 	interface StackChangeEvent {
-		void onChange(ItemStack itemStack);
+		void onChange(ItemStack itemStack, Type change);
+		enum Type {
+			ITEM,
+			STACK_COUNT,
+			DAMAGE
+		}
 	}
 
 	interface MainHand extends StackChangeEvent { }

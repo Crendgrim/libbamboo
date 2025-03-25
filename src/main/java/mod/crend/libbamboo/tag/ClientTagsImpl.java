@@ -122,6 +122,7 @@ public class ClientTagsImpl {
 		ClientTagsLoader.LoadedTag loadedTag = LOCAL_TAG_HIERARCHY.get(tagKey);
 
 		if (loadedTag == null) {
+			LOCAL_TAG_HIERARCHY.put(tagKey, new ClientTagsLoader.LoadedTag(Set.of(), Set.of(), Set.of()));
 			loadedTag = ClientTagsLoader.loadTag(tagKey);
 			LOCAL_TAG_HIERARCHY.put(tagKey, loadedTag);
 		}

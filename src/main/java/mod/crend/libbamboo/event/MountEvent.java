@@ -1,8 +1,12 @@
 package mod.crend.libbamboo.event;
 
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+
+//? if <=1.21.4 {
+import net.minecraft.entity.Entity;
+//?} else
+/*import net.minecraft.entity.JumpingMount;*/
 
 public interface MountEvent {
 	ClientEvent<MountHealth> MOUNT_HEALTH_CHANGE = ClientEventFactory.createArrayBacked();
@@ -23,6 +27,6 @@ public interface MountEvent {
 	interface MountHealth extends StatusEvent.ChangeEvent { }
 
 	interface MountJump {
-		void onJump(Entity vehicle);
+		void onJump(/*? if <=1.21.4 {*/Entity/*?} else {*//*JumpingMount*//*?}*/ vehicle);
 	}
 }

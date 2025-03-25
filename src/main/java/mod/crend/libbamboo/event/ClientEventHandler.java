@@ -22,6 +22,7 @@ public class ClientEventHandler {
 	static class GameState {
 		ItemStack previousMainHandStack;
 		ItemStack previousOffHandStack;
+		int previousSelectedSlot;
 		HitResult previousHitResult;
 		Vec3d previousPosition;
 		int ticksUntilStandingStill = 0;
@@ -38,24 +39,43 @@ public class ClientEventHandler {
 		public GameState(ClientPlayerEntity player) {
 			previousMainHandStack = player.getMainHandStack().copy();
 			previousOffHandStack = player.getOffHandStack().copy();
+			previousSelectedSlot = player.getInventory()./*? if <=1.21.4 {*/selectedSlot/*?} else {*//*getSelectedSlot()*//*?}*/;
 			previousHitResult = MinecraftClient.getInstance().crosshairTarget;
 			previousPosition = player.getPos();
+		}
+
+		private HotbarEvent.StackChangeEvent.Type slotChangeType(ItemStack current, ItemStack previous) {
+			if (ItemStack.areItemsEqual(current, previous)) {
+				if (current.getCount() != previous.getCount()) {
+					return HotbarEvent.StackChangeEvent.Type.STACK_COUNT;
+				}
+				if (current.getDamage() != previous.getDamage()) {
+					return HotbarEvent.StackChangeEvent.Type.DAMAGE;
+				}
+			}
+			return HotbarEvent.StackChangeEvent.Type.ITEM;
 		}
 
 		public void tick(ClientPlayerEntity player) {
 			if (HotbarEvent.MAIN_HAND_CHANGE.isRegistered()) {
 				ItemStack mainHandStack = player.getMainHandStack();
 				if (!ItemStack.areEqual(mainHandStack, previousMainHandStack)) {
+					HotbarEvent.StackChangeEvent.Type type = slotChangeType(mainHandStack, previousMainHandStack);
 					previousMainHandStack = mainHandStack.copy();
-					HotbarEvent.MAIN_HAND_CHANGE.invoker().onChange(mainHandStack);
+					HotbarEvent.MAIN_HAND_CHANGE.invoker().onChange(mainHandStack, type);
 				}
 			}
 			if (HotbarEvent.OFF_HAND_CHANGE.isRegistered()) {
 				ItemStack offHandStack = player.getOffHandStack();
 				if (!ItemStack.areEqual(offHandStack, previousOffHandStack)) {
+					HotbarEvent.StackChangeEvent.Type type = slotChangeType(offHandStack, previousOffHandStack);
 					previousOffHandStack = offHandStack.copy();
-					HotbarEvent.OFF_HAND_CHANGE.invoker().onChange(offHandStack);
+					HotbarEvent.OFF_HAND_CHANGE.invoker().onChange(offHandStack, type);
 				}
+			}
+			if (previousSelectedSlot != player.getInventory()./*? if <=1.21.4 {*/selectedSlot/*?} else {*//*getSelectedSlot()*//*?}*/) {
+				previousSelectedSlot = player.getInventory()./*? if <=1.21.4 {*/selectedSlot/*?} else {*//*getSelectedSlot()*//*?}*/;
+				HotbarEvent.SELECTED_SLOT_CHANGE.invoker().onSelectedSlotChange();
 			}
 
 			HitResult hitResult = MinecraftClient.getInstance().crosshairTarget;

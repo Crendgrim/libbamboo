@@ -6,6 +6,7 @@
   "client": [
     "ClientPlayerEntityMixin",
     "ClientPlayNetworkHandlerMixin",
+    "DrawContextAccessor",
     "HungerManagerMixin",
     "MinecraftClientAccessor",
     "MinecraftClientMixin"
