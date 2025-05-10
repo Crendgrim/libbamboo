@@ -1,6 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 plugins {
+    id("dev.kikugie.stonecutter")
     id("dev.architectury.loom")
     id("architectury-plugin")
     id("com.github.johnrengelman.shadow")
@@ -9,7 +10,7 @@ plugins {
 
 val loader = prop("loom.platform")!!
 val minecraft: String = stonecutter.current.version
-val common: Project = requireNotNull(stonecutter.node.sibling("")) {
+val common: Project = requireNotNull(stonecutter.node.sibling("")?.project) {
     "No common project for $project"
 }
 
@@ -42,10 +43,6 @@ configurations {
 repositories {
     maven("https://maven.neoforged.net/releases/")
     maven("https://maven.su5ed.dev/releases") // Forgified Fabric API
-    maven {
-        name = "Kotlin for Forge"
-        setUrl("https://thedarkcolour.github.io/KotlinForForge/")
-    }
 }
 
 dependencies {

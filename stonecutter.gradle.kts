@@ -1,66 +1,39 @@
 plugins {
     id("dev.kikugie.stonecutter")
-    id("dev.architectury.loom") version "1.9-SNAPSHOT" apply false
+    id("dev.architectury.loom") version "1.10.9999" apply false
     id("architectury-plugin") version "3.4-SNAPSHOT" apply false
     id("com.github.johnrengelman.shadow") version "8.1.1" apply false
 }
-stonecutter active "1.20.1" /* [SC] DO NOT EDIT */
-stonecutter.automaticPlatformConstants = true
-
-// Builds every version into `build/libs/{mod.version}/{loader}`
-stonecutter registerChiseled tasks.register("chiseledBuild", stonecutter.chiseled) {
-    group = "project"
-    ofTask("buildAndCollect")
-}
-
-// Builds loader-specific versions into `build/libs/{mod.version}/{loader}`
-for (it in stonecutter.tree.branches) {
-    if (it.id.isEmpty()) continue
-    val loader = it.id.upperCaseFirst()
-    stonecutter registerChiseled tasks.register("chiseledBuild$loader", stonecutter.chiseled) {
-        group = "project"
-        versions { branch, _ -> branch == it.id }
-        ofTask("buildAndCollect")
-    }
-}
-
-stonecutter registerChiseled tasks.register("chiseledPublishToMavenLocal", stonecutter.chiseled) {
-    group = "project"
-    ofTask("publishToMavenLocal")
-}
+stonecutter active file("active.stonecutter")
 
 // Runs active versions for each loader
-for (it in stonecutter.tree.nodes) {
-    if (it.metadata != stonecutter.current || it.branch.id.isEmpty()) continue
-    val types = listOf("Client", "Server")
-    val loader = it.branch.id.upperCaseFirst()
-    for (type in types) it.tasks.register("runActive$type$loader") {
+for (node in stonecutter.tree.nodes) {
+    if (!node.metadata.isActive || node.branch.id.isEmpty()) continue
+    for (type in listOf("Client", "Server")) tasks.register("runActive$type${node.branch.id.upperCaseFirst()}") {
         group = "project"
-        dependsOn("run$type")
+        dependsOn("${node.hierarchy}run$type")
     }
 }
 
 allprojects {
     repositories {
+        maven("https://thedarkcolour.github.io/KotlinForForge/")
         maven("https://maven.isxander.dev/releases")
     }
 }
 stonecutter parameters {
+    constants {
+        match(branch.id, "fabric", "neoforge", "forge")
+    }
     listOf(
         "forgified_fabric_api_forge",
         "forgified_fabric_api_neoforge"
     ).map {
-        it to
-                if (node == null)
-                // :neoforge:1.20.1 is not defined, so we would not be able to switch back to 1.20.1 without
-                // defining any constants used in the neoforge source set. Just set them all to unsupported.
-                    "[UNSUPPORTED]"
-                else
-                // For e.g. :fabric:1.20.1, use the property of :1.20.1
-                    (node!!.sibling("") ?: node!!).property("deps.$it").toString()
+        // For e.g. :fabric:1.20.1, use the property of :1.20.1
+        it to (node.sibling("") ?: node).project.property("deps.$it").toString()
     }.forEach { (mod, version) ->
         val modIsPresent = !version.startsWith("[");
-        const(mod, modIsPresent)
-        //dependency(mod, if (modIsPresent) version else "0")
+        constants[mod] = modIsPresent
+        dependencies[mod] = parse(if (modIsPresent) version.split("+")[0] else "0")
     }
 }
