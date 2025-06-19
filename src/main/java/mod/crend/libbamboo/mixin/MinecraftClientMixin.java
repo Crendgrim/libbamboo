@@ -1,7 +1,6 @@
 package mod.crend.libbamboo.mixin;
 
 import mod.crend.libbamboo.event.InteractionEvent;
-import mod.crend.libbamboo.render.CustomFramebufferRenderer;
 import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -9,12 +8,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+//? if <=1.21.5
+import mod.crend.libbamboo.render.CustomFramebufferRenderer;
+
 @Mixin(MinecraftClient.class)
 public class MinecraftClientMixin {
+	//? if <=1.21.5 {
 	@Inject(method = "onResolutionChanged", at=@At("TAIL"))
 	private void onResolutionChanged(CallbackInfo ci) {
 		CustomFramebufferRenderer.resizeFramebuffer();
 	}
+	//?}
 
 	@Inject(
 			method = "doAttack",

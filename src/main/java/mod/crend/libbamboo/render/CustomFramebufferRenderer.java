@@ -1,3 +1,4 @@
+//? if <=1.21.5 {
 package mod.crend.libbamboo.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -137,3 +138,4 @@ public class CustomFramebufferRenderer {
 		}
 	}
 }
+//?}

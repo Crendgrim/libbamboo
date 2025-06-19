@@ -53,6 +53,9 @@ dependencies {
         implementation(it)
         include(it)
     }
+    if (stonecutter.eval(stonecutter.current.version, ">=1.21.6")) {
+        annotationProcessor("net.minecraftforge:eventbus-validator:7.0-beta.7")
+    }
 
     if (!common.mod.dep("forgified_fabric_api_forge").startsWith("[")) {
         modCompileOnly("dev.su5ed.sinytra.fabric-api:fabric-api:${common.mod.dep("forgified_fabric_api_forge")}")

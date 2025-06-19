@@ -58,7 +58,11 @@ dependencies {
         } else {
             "fabric-convention-tags-v2"
         },
-        "fabric-client-tags-api-v1",
+        if (stonecutter.eval(mcVersion, "<1.21.6")) {
+            "fabric-client-tags-api-v1"
+        } else {
+            "fabric-tag-api-v1"
+        },
         "fabric-lifecycle-events-v1"
     ).forEach {
         modImplementation(fabricApi.module(it, common.mod.dep("fabric_api")))

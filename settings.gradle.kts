@@ -12,12 +12,12 @@ pluginManagement {
 }
 
 plugins {
-    id("dev.kikugie.stonecutter") version "0.7-alpha.14"
+    id("dev.kikugie.stonecutter") version "0.7-alpha.16"
 }
 
-var fabricVersions = linkedSetOf(   "1.20.1", "1.20.4", "1.20.6", "1.21.1", "1.21.3", "1.21.5")
-var forgeVersions = linkedSetOf(    "1.20.1", "1.20.4", "1.20.6", "1.21.1", "1.21.3", "1.21.5")
-var neoforgeVersions = linkedSetOf(           "1.20.4", "1.20.6", "1.21.1", "1.21.3", "1.21.5")
+var fabricVersions = linkedSetOf(   "1.20.1", "1.20.4", "1.20.6", "1.21.1", "1.21.3", "1.21.5", "1.21.6")
+var forgeVersions = linkedSetOf(    "1.20.1", "1.20.4", "1.20.6", "1.21.1", "1.21.3", "1.21.5", "1.21.6")
+var neoforgeVersions = linkedSetOf(           "1.20.4", "1.20.6", "1.21.1", "1.21.3", "1.21.5", "1.21.6")
 
 stonecutter {
     centralScript = "build.gradle.kts"
