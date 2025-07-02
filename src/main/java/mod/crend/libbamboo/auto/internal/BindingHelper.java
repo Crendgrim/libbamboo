@@ -1,3 +1,4 @@
+//? if yacl {
 package mod.crend.libbamboo.auto.internal;
 
 import com.google.common.collect.Lists;
@@ -125,3 +126,4 @@ class BindingHelper<T> {
 	}
 
 }
+//?}

@@ -1,3 +1,4 @@
+//? if yacl {
 package mod.crend.libbamboo.controller;
 
 import dev.isxander.yacl3.api.Controller;
@@ -178,4 +179,4 @@ public class NestingController implements Controller<Boolean> {
 		}
 	}
 }
-
+//?}

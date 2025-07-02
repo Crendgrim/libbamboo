@@ -14,8 +14,10 @@ public class EnumFormatter {
 			// Support both YACL and LibBamboo's NameableEnum interfaces
 			if (value instanceof NameableEnum nameableEnum)
 				return nameableEnum.getDisplayName();
+			//? if yacl {
 			if (value instanceof dev.isxander.yacl3.api.NameableEnum nameableEnum)
 				return nameableEnum.getDisplayName();
+			//?}
 			if (value instanceof TranslatableOption translatableOption)
 				return translatableOption.getText();
 			return Text.literal(value.toString());

@@ -1,3 +1,4 @@
+//? if yacl {
 package mod.crend.libbamboo.auto;
 
 import dev.isxander.yacl3.api.*;
@@ -522,3 +523,4 @@ public class AutoYacl <T> {
 		}
 	}
 }
+//?}

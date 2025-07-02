@@ -1,3 +1,4 @@
+//? if yacl {
 package mod.crend.libbamboo.controller;
 
 import dev.isxander.yacl3.api.Controller;
@@ -141,3 +142,4 @@ public class SubScreenController<T> implements Controller<T> {
 		}
 	}
 }
+//?}

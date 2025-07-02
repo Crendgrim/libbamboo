@@ -1,6 +1,9 @@
 package mod.crend.libbamboo.auto.annotation;
 
+//? if yacl {
 import dev.isxander.yacl3.gui.image.ImageRenderer;
+//?} else
+/*import mod.crend.libbamboo.opt.yacl.ImageRenderer;*/
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

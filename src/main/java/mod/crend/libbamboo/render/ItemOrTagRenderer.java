@@ -1,6 +1,5 @@
 package mod.crend.libbamboo.render;
 
-import dev.isxander.yacl3.gui.image.ImageRenderer;
 import mod.crend.libbamboo.type.BlockOrTag;
 import mod.crend.libbamboo.type.ItemOrTag;
 import mod.crend.libbamboo.auto.annotation.DescriptionImage;
@@ -13,6 +12,11 @@ import net.minecraft.item.Items;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+//? if yacl {
+import dev.isxander.yacl3.gui.image.ImageRenderer;
+//?} else
+/*import mod.crend.libbamboo.opt.yacl.ImageRenderer;*/
 
 public class ItemOrTagRenderer implements ImageRenderer {
 	protected final List<Item> list = new ArrayList<>();

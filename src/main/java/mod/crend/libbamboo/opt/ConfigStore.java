@@ -17,6 +17,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.Item;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+//? if >1.21.3
+/*import com.google.gson.Strictness;*/
 
 import java.awt.Color;
 import java.io.IOException;
@@ -59,6 +61,7 @@ public class ConfigStore<T> {
 	private T configInstance;
 	private String modId;
 	private Class<T> configClass;
+	//? if yacl
 	private WithYacl<T> yaclWrapper;
 	private Path path;
 
@@ -134,6 +137,9 @@ public class ConfigStore<T> {
 				StringWriter stringWriter = new StringWriter();
 				JsonWriter jsonWriter = new JsonWriter(stringWriter);
 				jsonWriter.setIndent("  ");
+				//? if >1.21.3 {
+				/*jsonWriter.setStrictness(Strictness.LENIENT);
+				*///?} else
 				jsonWriter.setLenient(true);
 				Streams.write(json, jsonWriter);
 				Files.writeString(path, stringWriter.toString());
@@ -143,9 +149,12 @@ public class ConfigStore<T> {
 			createNewConfig(configClass);
 			doSave = true;
 		}
+		//? if yacl {
 		if (LibBamboo.HAS_YACL) {
 			yaclWrapper = new WithYacl<>(configClass, VersionUtils.getIdentifier(modId, configClass.getSimpleName().toLowerCase()), path);
-		} else {
+		} else
+		//?}
+		{
 			try {
 				configInstance = getGsonBuilder().create().fromJson(Files.readString(path), configClass);
 			} catch (IOException e) {
@@ -163,9 +172,12 @@ public class ConfigStore<T> {
 	 * @return Config class object
 	 */
 	public T config() {
+		//? if yacl {
 		if (LibBamboo.HAS_YACL) {
 			return yaclWrapper.getConfig();
-		} else {
+		} else
+		//?}
+		{
 			return configInstance;
 		}
 	}
@@ -174,9 +186,12 @@ public class ConfigStore<T> {
 	 * Saves the current configuration, either through YACL or static variable
 	 */
 	public void save() {
+		//? if yacl {
 		if (LibBamboo.HAS_YACL) {
 			yaclWrapper.save();
-		} else {
+		} else
+		//?}
+		{
 			try {
 				Files.writeString(path, getGsonBuilder().create().toJson(configInstance));
 			} catch (IOException ignored) {
@@ -194,19 +209,24 @@ public class ConfigStore<T> {
 		}
 	}
 
+	//? if yacl {
 	public WithYacl<T> withYacl() {
 		assert(LibBamboo.HAS_YACL);
 		return yaclWrapper;
 	}
+	//?}
 
 	public Class<T> getConfigClass() {
 		return configClass;
 	}
 
 	public Screen makeScreen(Screen parent) {
+		//? if yacl {
 		if (LibBamboo.HAS_YACL) {
 			return withYacl().makeScreen(parent);
-		} else {
+		} else
+		//?}
+		{
 			AutoYaclConfig ayc = configClass.getAnnotation(AutoYaclConfig.class);
 			String translationKey = modId + ".title";
 			if (ayc != null && !ayc.translationKey().isBlank()) {

@@ -18,4 +18,12 @@ public class VersionUtils {
 		/*return Identifier.of(namespace, path);
 		*///?}
 	}
+
+	public static Identifier getVanillaIdentifier(String path) {
+		//? if <1.21 {
+		return new Identifier(Identifier.DEFAULT_NAMESPACE, path);
+		//?} else {
+		/*return Identifier.ofVanilla(path);
+		 *///?}
+	}
 }

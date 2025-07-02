@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "${id}",
+  "version": "${version}",
+
+  "name": "${name}",
+  "description": "Library for Crendgrim's client-side mods",
+  "authors": [
+    "Crendgrim"
+  ],
+  "contact": {
+  },
+
+  "license": "LGPL-3.0",
+  "icon": "assets/${id}/icon.png",
+
+  "environment": "client",
+  "mixins": [
+    "libbamboo.mixins.json"
+  ],
+
+  "entrypoints": {
+    "client": ["mod.crend.libbamboo.LibBambooMod"]
+  },
+
+  "depends": {
+    "fabricloader": ">=0.15",
+    "minecraft": "${minecraft}"
+  },
+  "suggests": {
+    "yet_another_config_lib": "3.*"
+  },
+  "custom": {
+    "modmenu": {
+      "badges": ["library"]
+    }
+  }
+}

@@ -10,10 +10,10 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.util.Window;
 import org.joml.Matrix4f;
 
-//? if >=1.21.2 {
-/*import mod.crend.libbamboo.mixin.MinecraftClientAccessor;
-import mod.crend.libbamboo.mixin.DrawContextAccessor;
-*///?}
+//? if >=1.21.2
+/*import mod.crend.libbamboo.mixin.MinecraftClientAccessor;*/
+//? if =1.21.5
+/*import mod.crend.libbamboo.mixin.DrawContextAccessor;*/
 //? if >=1.21.2 && <=1.21.4
 /*import net.minecraft.client.gl.ShaderProgramKeys;*/
 //? if <=1.21.4 {

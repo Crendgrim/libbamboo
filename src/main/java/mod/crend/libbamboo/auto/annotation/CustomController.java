@@ -1,7 +1,9 @@
 package mod.crend.libbamboo.auto.annotation;
 
+//? if yacl {
 import dev.isxander.yacl3.api.Controller;
 import dev.isxander.yacl3.api.Option;
+//?}
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -15,6 +17,9 @@ public @interface CustomController {
 
 	@FunctionalInterface
 	interface ControllerFactory<T> {
+		//? if yacl {
 		Controller<T> create(Option<T> option);
+		//?} else
+		/*Object create(Object option);*/
 	}
 }

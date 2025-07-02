@@ -1,6 +1,5 @@
 package mod.crend.libbamboo;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.registry.tag.TagKey;
@@ -10,7 +9,6 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
-@SuppressWarnings("unused")
 public class PlatformUtils {
 	public enum Platform {
 		FABRIC,
@@ -18,53 +16,50 @@ public class PlatformUtils {
 		NEOFORGE
 	}
 
-	@ExpectPlatform
+	//? if fabric {
+	static PlatformUtilsFabric platform = new PlatformUtilsFabric();
+	//?} else if forge {
+	/*static PlatformUtilsForge platform = new PlatformUtilsForge();
+	*///?} else if neoforge
+	/*static PlatformUtilsNeoforge platform = new PlatformUtilsNeoforge();*/
+
 	public static Platform getCurrentPlatform() {
-		throw new AssertionError();
+		return platform.getCurrentPlatform();
 	}
 
-	@ExpectPlatform
 	public static boolean isYaclLoaded() {
-		throw new AssertionError();
+		return isModLoaded(LibBamboo.YACL_MOD_ID);
 	}
 
-	@ExpectPlatform
 	public static boolean isModLoaded(String modId) {
-		throw new AssertionError();
+		return platform.isModLoaded(modId);
 	}
 
-	@ExpectPlatform
 	public static boolean isModPresent(String modId) {
-		throw new AssertionError();
+		return platform.isModPresent(modId);
 	}
 
-	@ExpectPlatform
 	public static Path resolveConfigFile(String configName) {
-		throw new AssertionError();
+		return platform.resolveConfigFile(configName);
 	}
 
-	@ExpectPlatform
 	public static Class<?> getModdedItemTagsClass() {
-		throw new AssertionError();
+		return platform.getModdedItemTagsClass();
 	}
 
-	@ExpectPlatform
 	public static Set<Identifier> getItemsFromTag(TagKey<Item> itemTagKey) {
-		throw new AssertionError();
+		return platform.getItemsFromTag(itemTagKey);
 	}
 
-	@ExpectPlatform
 	public static Class<?> getModdedBlockTagsClass() {
-		throw new AssertionError();
+		return platform.getModdedBlockTagsClass();
 	}
 
-	@ExpectPlatform
 	public static Set<Identifier> getBlocksFromTag(TagKey<Block> blockTagKey) {
-		throw new AssertionError();
+		return platform.getBlocksFromTag(blockTagKey);
 	}
 
-	@ExpectPlatform
 	public static HashSet<Path> getResourcePaths(String path) {
-		throw new AssertionError();
+		return platform.getResourcePaths(path);
 	}
 }

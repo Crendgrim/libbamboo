@@ -1,5 +1,6 @@
 package mod.crend.libbamboo.mixin;
 
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import mod.crend.libbamboo.event.InteractionEvent;
 import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import mod.crend.libbamboo.render.CustomFramebufferRenderer;
 
 @Mixin(MinecraftClient.class)
+@MixinEnvironment(type = MixinEnvironment.Env.CLIENT)
 public class MinecraftClientMixin {
 	//? if <=1.21.5 {
 	@Inject(method = "onResolutionChanged", at=@At("TAIL"))

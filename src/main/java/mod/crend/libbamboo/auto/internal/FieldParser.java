@@ -1,3 +1,4 @@
+//? if yacl {
 package mod.crend.libbamboo.auto.internal;
 
 import dev.isxander.yacl3.api.*;
@@ -187,3 +188,4 @@ public record FieldParser<T>(
 	}
 
 }
+//?}

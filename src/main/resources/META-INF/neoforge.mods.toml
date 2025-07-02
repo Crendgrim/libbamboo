@@ -1,0 +1,15 @@
+modLoader = "javafml"
+loaderVersion = "*"
+license = "LGPL-3.0"
+
+[[mods]]
+modId = "${id}"
+version = "${version}"
+displayName = "${name}"
+authors = "Crendgrim"
+description = "Library for Crendgrim's client-side mods"
+logoFile = "assets/${id}/icon.png"
+logoBlur = false
+
+[[mixins]]
+config = "libbamboo.mixins.json"

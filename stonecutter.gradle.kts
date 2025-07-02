@@ -1,26 +1,23 @@
 plugins {
     id("dev.kikugie.stonecutter")
-    id("dev.architectury.loom") version "1.10.9999" apply false
-    id("architectury-plugin") version "3.4-SNAPSHOT" apply false
+    id("dev.architectury.loom") version "1.10-SNAPSHOT" apply false
     id("com.github.johnrengelman.shadow") version "8.1.1" apply false
+    id("me.modmuss50.mod-publish-plugin") version "0.8.1" apply false
 }
+
 stonecutter active file("active.stonecutter")
 
-// Runs active versions for each loader
-for (node in stonecutter.tree.nodes) {
-    if (!node.metadata.isActive || node.branch.id.isEmpty()) continue
-    for (type in listOf("Client", "Server")) tasks.register("runActive$type${node.branch.id.upperCaseFirst()}") {
-        group = "project"
-        dependsOn("${node.hierarchy}run$type")
+stonecutter parameters {
+    constants {
+        match(node.metadata.project.substringAfterLast("-"), "fabric", "neoforge", "forge")
     }
 }
 
-allprojects {
-    repositories {
-        maven("https://thedarkcolour.github.io/KotlinForForge/")
-        maven("https://maven.isxander.dev/releases")
-    }
+stonecutter tasks {
+//    order("publishMods")
 }
+
+/*
 stonecutter parameters {
     constants {
         match(branch.id, "fabric", "neoforge", "forge")
@@ -37,3 +34,4 @@ stonecutter parameters {
         dependencies[mod] = parse(if (modIsPresent) version.split("+")[0] else "0")
     }
 }
+*/

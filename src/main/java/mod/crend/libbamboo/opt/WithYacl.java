@@ -1,3 +1,4 @@
+//? if yacl {
 package mod.crend.libbamboo.opt;
 
 import com.google.gson.FieldNamingPolicy;
@@ -77,3 +78,4 @@ public class WithYacl<T> {
 		void onConfigChange();
 	}
 }
+//?}

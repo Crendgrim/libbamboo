@@ -1,3 +1,4 @@
+//? if yacl {
 package mod.crend.libbamboo.auto.internal;
 
 import dev.isxander.yacl3.api.Controller;
@@ -328,3 +329,4 @@ class TypedController {
 	}
 
 }
+//?}

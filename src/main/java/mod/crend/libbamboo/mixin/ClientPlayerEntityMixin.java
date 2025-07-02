@@ -3,6 +3,7 @@ package mod.crend.libbamboo.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.authlib.GameProfile;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import mod.crend.libbamboo.event.MountEvent;
 import mod.crend.libbamboo.event.StatusEvent;
 import net.minecraft.client.MinecraftClient;
@@ -20,6 +21,7 @@ import net.minecraft.entity.Entity;
 /*import net.minecraft.entity.JumpingMount;*/
 
 @Mixin(ClientPlayerEntity.class)
+@MixinEnvironment(type = MixinEnvironment.Env.CLIENT)
 public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity {
 
     public ClientPlayerEntityMixin(ClientWorld world, GameProfile profile) {

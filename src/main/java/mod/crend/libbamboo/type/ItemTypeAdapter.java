@@ -1,7 +1,7 @@
 package mod.crend.libbamboo.type;
 
 import com.google.gson.*;
-import dev.isxander.yacl3.gui.utils.ItemRegistryHelper;
+import mod.crend.libbamboo.ItemRegistryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 
