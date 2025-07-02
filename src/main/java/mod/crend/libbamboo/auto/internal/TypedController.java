@@ -287,6 +287,9 @@ class TypedController {
 		} else {
 			builder = TypedController.makeBuilder(fieldParser);
 		}
+		if (field.isAnnotationPresent(Disable.class)) {
+			builder = builder.available(false);
+		}
 
 		return builder.controller(controller);
 	}
@@ -325,6 +328,11 @@ class TypedController {
 		} else if (type.equals(BlockOrTag.class)) {
 			((ListOption.Builder<BlockOrTag>) listBuilder).initial(new BlockOrTag(Blocks.AIR));
 		}
+
+		if (field.isAnnotationPresent(Disable.class)) {
+			listBuilder = listBuilder.available(false);
+		}
+
 		return listBuilder;
 	}
 
