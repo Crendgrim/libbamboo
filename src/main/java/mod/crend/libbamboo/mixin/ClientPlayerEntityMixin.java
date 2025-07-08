@@ -52,7 +52,8 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
     )
     private /*? if <=1.21.4 {*/Entity/*?} else {*//*JumpingMount*//*?}*/ jumpBarChanged(ClientPlayerEntity instance, Operation</*? if <=1.21.4 {*/Entity/*?} else {*//*JumpingMount*//*?}*/> original) {
         var vehicle = original.call(instance);
-        if (MinecraftClient.getInstance().player != null
+        if (vehicle != null
+                && MinecraftClient.getInstance().player != null
                 && MinecraftClient.getInstance().player.input./*? if <1.21.2 {*/jumping/*?} else {*//*playerInput.jump()*//*?}*/
         ) {
             MountEvent.MOUNT_JUMP.invoker().onJump(vehicle);
