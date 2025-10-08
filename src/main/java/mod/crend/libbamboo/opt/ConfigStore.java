@@ -124,6 +124,9 @@ public class ConfigStore<T> {
 		this.configClass = configClass;
 		this.modId = modId;
 		this.path = path;
+		load(updater);
+	}
+	private void load(ConfigUpdater updater) {
 		ConfigJsonValidator<T> jsonValidator = new ConfigJsonValidator<>(configClass);
 		boolean doSave = false;
 		try {
@@ -179,6 +182,20 @@ public class ConfigStore<T> {
 		//?}
 		{
 			return configInstance;
+		}
+	}
+
+	/**
+	 * Reloads the configuration from disk
+	 */
+	public void reload() {
+		//? if yacl {
+		if (LibBamboo.HAS_YACL) {
+			yaclWrapper.reload();
+		} else
+		//?}
+		{
+			load(null);
 		}
 	}
 

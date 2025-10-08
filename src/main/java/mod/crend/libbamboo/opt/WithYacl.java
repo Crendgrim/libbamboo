@@ -74,6 +74,10 @@ public class WithYacl<T> {
 		return yacl.generateScreen(parent);
 	}
 
+	public void reload() {
+		instance.load();
+	}
+
 	public interface ConfigChangeListener {
 		void onConfigChange();
 	}
