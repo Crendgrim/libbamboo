@@ -15,10 +15,10 @@ import java.util.function.Supplier;
 public class ConfigScreen {
 
 	//? if neoforge || <1.21.1 {
-	/^public static <T> void register(Supplier<ConfigStore<T>> configStore) {
+	public static <T> void register(Supplier<ConfigStore<T>> configStore) {
 		register(ModLoadingContext.get(), configStore);
 	}
-	^///?}
+	//?}
 
 	public static <T> void register(ModLoadingContext context, Supplier<ConfigStore<T>> configStore) {
 		if (LibBamboo.HAS_YACL) {

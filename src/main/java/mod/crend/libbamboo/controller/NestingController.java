@@ -13,6 +13,11 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 
+//? if >1.21.8 {
+/*import net.minecraft.client.gui.Click;
+import net.minecraft.client.input.KeyInput;
+*///?}
+
 public class NestingController implements Controller<Boolean> {
 	private final Option<Boolean> option;
 	private Option<?> nestedOption;
@@ -112,6 +117,7 @@ public class NestingController implements Controller<Boolean> {
 			}
 		}
 
+		//? if <=1.21.8 {
 		@Override
 		public boolean mouseClicked(double mouseX, double mouseY, int button) {
 			if (isMouseOver(mouseX, mouseY) && isAvailable()) {
@@ -120,6 +126,16 @@ public class NestingController implements Controller<Boolean> {
 			}
 			return nestedElement.mouseClicked(mouseX, mouseY, button);
 		}
+		//?} else {
+		/*@Override
+		public boolean mouseClicked(Click mouseButtonEvent, boolean doubleClick) {
+			if (isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y()) && isAvailable()) {
+				toggleSetting();
+				return true;
+			}
+			return nestedElement.mouseClicked(mouseButtonEvent, doubleClick);
+		}
+		*///?}
 
 		@Override
 		protected int getHoveredControlWidth() {
@@ -138,7 +154,12 @@ public class NestingController implements Controller<Boolean> {
 		}
 
 		@Override
+		//? if <=1.21.8 {
 		public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		//?} else {
+		/*public boolean keyPressed(KeyInput keyEvent) {
+			int keyCode = keyEvent.getKeycode();
+		*///?}
 			if (!focused) {
 				return false;
 			}

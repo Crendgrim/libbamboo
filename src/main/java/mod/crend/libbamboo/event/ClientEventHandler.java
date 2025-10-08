@@ -41,7 +41,7 @@ public class ClientEventHandler {
 			previousOffHandStack = player.getOffHandStack().copy();
 			previousSelectedSlot = player.getInventory()./*? if <=1.21.4 {*/selectedSlot/*?} else {*//*getSelectedSlot()*//*?}*/;
 			previousHitResult = MinecraftClient.getInstance().crosshairTarget;
-			previousPosition = player.getPos();
+			previousPosition = player./*? if <=1.21.8 {*/getPos()/*?} else {*//*getEntityPos()*//*?}*/;
 		}
 
 		private HotbarEvent.StackChangeEvent.Type slotChangeType(ItemStack current, ItemStack previous) {
@@ -90,13 +90,13 @@ public class ClientEventHandler {
 					case BLOCK -> {
 						if (TargetEvent.TARGETED_BLOCK_TICK.isRegistered() || TargetEvent.TARGETED_BLOCK_CHANGED.isRegistered()) {
 							BlockPos blockPos = ((BlockHitResult) hitResult).getBlockPos();
-							BlockState blockState = player.clientWorld.getBlockState(blockPos);
+							BlockState blockState = player./*? if <=1.21.8 {*/clientWorld/*?} else {*//*getEntityWorld()*//*?}*/.getBlockState(blockPos);
 							if (TargetEvent.TARGETED_BLOCK_CHANGED.isRegistered()) {
 								if (previousHitResult == null || previousHitResult.getType() != HitResult.Type.BLOCK) {
 									TargetEvent.TARGETED_BLOCK_CHANGED.invoker().target(blockPos, blockState);
 								} else {
 									BlockPos previousBlockPos = ((BlockHitResult) previousHitResult).getBlockPos();
-									BlockState previousBlockState = player.clientWorld.getBlockState(previousBlockPos);
+									BlockState previousBlockState = player./*? if <=1.21.8 {*/clientWorld/*?} else {*//*getEntityWorld()*//*?}*/.getBlockState(previousBlockPos);
 									if (!blockPos.equals(previousBlockPos) || !blockState.equals(previousBlockState)) {
 										TargetEvent.TARGETED_BLOCK_CHANGED.invoker().target(blockPos, blockState);
 									}
@@ -150,7 +150,7 @@ public class ClientEventHandler {
 			}
 
 			if (MoveEvent.MOVING.isRegistered() || MoveEvent.STANDING_STILL.isRegistered()) {
-				Vec3d position = player.getPos();
+				Vec3d position = player./*? if <=1.21.8 {*/getPos()/*?} else {*//*getEntityPos()*//*?}*/;
 				if (!position.equals(previousPosition)) {
 					MoveEvent.MOVING.invoker().onMove(player, position);
 					previousPosition = position;

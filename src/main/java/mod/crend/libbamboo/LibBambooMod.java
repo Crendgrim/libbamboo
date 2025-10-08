@@ -1,5 +1,6 @@
 package mod.crend.libbamboo;
 
+import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
 import mod.crend.libbamboo.event.GameEvent;
 //? if fabric {
 import net.fabricmc.api.ClientModInitializer;
@@ -32,6 +33,8 @@ import net.neoforged.neoforge.common.NeoForge;
 
 //? if forge || neoforge
 /*@Mod(LibBamboo.MOD_ID)*/
+//? if fabric
+@Entrypoint
 public class LibBambooMod /*? if fabric {*/implements ClientModInitializer/*?}*/ {
 
 	//? if fabric {
@@ -50,7 +53,12 @@ public class LibBambooMod /*? if fabric {*/implements ClientModInitializer/*?}*/
     /*//? if forge {
     /^@Mod.EventBusSubscriber(modid = LibBamboo.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     ^///?} else {
-    @EventBusSubscriber(modid = LibBamboo.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @EventBusSubscriber(
+			modid = LibBamboo.MOD_ID,
+			//? if <1.21.9
+			bus = EventBusSubscriber.Bus.MOD,
+			value = Dist.CLIENT
+		)
     //?}
     public static class ModBus {
 

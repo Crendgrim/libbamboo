@@ -2,8 +2,6 @@
 package mod.crend.libbamboo;
 
 import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.block.Block;
@@ -14,6 +12,14 @@ import net.minecraft.util.Identifier;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
+
+/*? if <1.20.5 {*/
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
+//?} else {
+/*import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
+*///?}
 
 public class PlatformUtilsFabric {
 	public PlatformUtils.Platform getCurrentPlatform() {

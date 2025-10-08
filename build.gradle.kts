@@ -1,10 +1,10 @@
 @file:Suppress("UnstableApiUsage")
 
 plugins {
-    kotlin("jvm") version "2.1.21"
-    id("com.google.devtools.ksp") version "2.1.21-2.0.2"
-    id("dev.kikugie.fletching-table.fabric") version "0.1.0-alpha.7"
-    id("dev.kikugie.fletching-table.neoforge") version "0.1.0-alpha.7"
+    kotlin("jvm") version "2.2.10"
+    id("com.google.devtools.ksp") version "2.2.10-2.0.2"
+    id("dev.kikugie.fletching-table.fabric") version "0.1.0-alpha.18"
+    id("dev.kikugie.fletching-table.neoforge") version "0.1.0-alpha.18"
     id("dev.kikugie.stonecutter")
     id("dev.architectury.loom")
     id("com.github.johnrengelman.shadow")
@@ -93,6 +93,9 @@ dependencies {
         mod.dep("neoforge_patch").takeUnless { it.startsWith('[') }?.let {
             mappings("dev.architectury:yarn-mappings-patch-neoforge:$it")
         }
+        mod.dep("forge_patch").takeUnless { it.startsWith('[') }?.let {
+            mappings("dev.architectury:yarn-mappings-patch-forge:$it")
+        }
     })
 
     when (loader) {
@@ -180,8 +183,8 @@ tasks.processResources {
 }
 
 fletchingTable {
-    mixins.create("main") {
-        default = "${mod.id}.mixins.json"
+    mixins.register("main") {
+        mixin(alias = "default", file = "${mod.id}.mixins.json")
     }
     fabric {
         applyMixinConfig = false
